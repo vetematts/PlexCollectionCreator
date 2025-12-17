@@ -1,9 +1,8 @@
 # Plex Collection Creator 🎬
 
 This is a custom Python application that helps users manage and organize their Plex movie libraries by building themed collections. Whether you're a fan of franchises like _Harry Potter_ or studios like _A24_, this tool streamlines the process of grouping titles into collections.
-![Uploading CleanShot 2025-12-17 at 20.54.28@2x.png…]()
 
-## <img width="1282" height="1484" alt="CleanShot 2025-08-07 at 16 13 03@2x" src="https://github.com/user-attachments/assets/ef08fb26-52c1-4797-b566-2d1169688b39" />
+<img width="1244" height="1492" alt="PlexCollectionCreatorTerminal" src="https://github.com/user-attachments/assets/3e8ae6cc-bda0-4c24-98df-8605cb5ee146" />
 
 ## 🛠️ Setup
 
