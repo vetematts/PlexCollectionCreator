@@ -91,11 +91,8 @@ def run_collection_builder():
             return results[0]
 
         print(f"\nMultiple Plex matches for '{raw_title}':")
-        preview = results[:8]
-        for i, item in enumerate(preview, 1):
+        for i, item in enumerate(results, 1):
             print(f"{i}. {format_plex_item(item)}")
-        if len(results) > len(preview):
-            print(f"...and {len(results) - len(preview)} more not shown.")
 
         while True:
             choice = input(
@@ -107,8 +104,8 @@ def run_collection_builder():
                 raise UserAbort()
             if choice.isdigit():
                 idx = int(choice)
-                if 1 <= idx <= len(preview):
-                    return preview[idx - 1]
+                if 1 <= idx <= len(results):
+                    return results[idx - 1]
             print("Invalid selection.")
 
     dry_run = False
