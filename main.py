@@ -45,7 +45,7 @@ def welcome():
     # Display welcome message and Plex logo.
     os.system("clear")  # Optional: clears terminal screen for cleanliness
     print_plex_logo_ascii()
-    print(Fore.CYAN + f"\n{emojis.MOVIE} Welcome to the Plex Collection Builder!")
+    print(Fore.CYAN + f"\n{emojis.MOVIE} Welcome to the Plex Collection Creator!")
     print(Fore.YELLOW + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 
@@ -361,10 +361,8 @@ def run_collection_builder():
                 def fetch_movies_by_company_or_keyword(
                     api_key, company_id=None, keyword_id=None
                 ):
-                    """
-                    Fetches movie titles from TMDb Discover using a company or keyword.
-                    Raises a clear exception on HTTP errors (e.g., invalid/expired API key).
-                    """
+                    # Fetches movie titles from TMDb Discover using a company or keyword.
+                    # Raises a clear exception on HTTP errors (e.g., invalid/expired API key).
                     url = "https://api.themoviedb.org/3/discover/movie"
                     params = {
                         "api_key": api_key,
