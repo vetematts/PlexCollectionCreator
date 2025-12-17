@@ -76,9 +76,49 @@ def run_collection_builder():
     def pause(msg: str = "Press Enter to return to the menu..."):
         input(msg)
 
+    class UserAbort(Exception):
+        pass
+
+    def format_plex_item(item) -> str:
+        title = getattr(item, "title", str(item))
+        year = getattr(item, "year", None)
+        return f"{title} ({year})" if year else title
+
+    def pick_plex_match(raw_title: str, results):
+        if not results:
+            return None
+        if len(results) == 1:
+            return results[0]
+
+        print(f"\nMultiple Plex matches for '{raw_title}':")
+        preview = results[:8]
+        for i, item in enumerate(preview, 1):
+            print(f"{i}. {format_plex_item(item)}")
+        if len(results) > len(preview):
+            print(f"...and {len(results) - len(preview)} more not shown.")
+
+        while True:
+            choice = input(
+                "Pick a number, 's' to skip, or 'q' to cancel: "
+            ).strip().lower()
+            if choice in ("s", "skip"):
+                return None
+            if choice in ("q", "quit"):
+                raise UserAbort()
+            if choice.isdigit():
+                idx = int(choice)
+                if 1 <= idx <= len(preview):
+                    return preview[idx - 1]
+            print("Invalid selection.")
+
+    dry_run = False
     while True:
         welcome()
         check_credentials()
+        print(
+            Fore.LIGHTBLACK_EX
+            + f"{emojis.INFO}  Dry run: {'ON' if dry_run else 'OFF'} (no Plex changes when ON)\n"
+        )
 
         # Main menu
         print(Fore.BLUE + f"{emojis.CLAPPER} MAIN MENU:\n")
@@ -101,21 +141,36 @@ def run_collection_builder():
             + Fore.RESET
             + f" {emojis.SETTINGS}  Configure Credentials (Plex / TMDb)\n"
         )
-        print(Fore.RED + "5." + Fore.RESET + f" {emojis.EXIT} Exit\n")
+        print(
+            Fore.CYAN
+            + "5."
+            + Fore.RESET
+            + f" {emojis.REPEAT} Toggle Dry Run (currently {'ON' if dry_run else 'OFF'})\n"
+        )
+        print(Fore.RED + "6." + Fore.RESET + f" {emojis.EXIT} Exit\n")
         print(
             Fore.LIGHTBLACK_EX
             + f"{emojis.INFO}  You can return to this menu after each collection is created.\n"
         )
-        mode = input().strip()
+        mode = input("Select an option: ").strip()
 
-        if mode not in ("1", "2", "3", "4", "5"):
-            print("Invalid selection. Please choose a valid menu option (1-5).")
+        if mode not in ("1", "2", "3", "4", "5", "6"):
+            print("Invalid selection. Please choose a valid menu option (1-6).")
             pause()
             continue
 
-        if mode == "5":
+        if mode == "6":
             print(f"{emojis.WAVE} Goodbye!")
             return
+
+        if mode == "5":
+            dry_run = not dry_run
+            print(
+                Fore.GREEN
+                + f"{emojis.CHECK} Dry run is now {'ON' if dry_run else 'OFF'}."
+            )
+            pause()
+            continue
 
         # Credentials settings
         if mode == "4":
@@ -477,24 +532,39 @@ def run_collection_builder():
             )
 
         found_movies, not_found = [], []
-        for raw in titles:
-            title, year = extract_title_and_year(raw)
-            try:
-                results = (
-                    library.search(title, year=year) if year else library.search(title)
-                )
-                if results:
-                    found_movies.append(results[0])
-                else:
-                    if year:
-                        fallback = library.search(title)
-                        if fallback:
-                            found_movies.append(fallback[0])
-                            continue
+        matched_pairs = []
+        seen_rating_keys = set()
+        try:
+            for raw in titles:
+                title, year = extract_title_and_year(raw)
+                try:
+                    results = (
+                        library.search(title, year=year)
+                        if year
+                        else library.search(title)
+                    )
+                    if not results and year:
+                        results = library.search(title)
+
+                    chosen = pick_plex_match(raw, results)
+                    if chosen is None:
+                        not_found.append(raw)
+                        continue
+
+                    rating_key = str(getattr(chosen, "ratingKey", ""))
+                    if rating_key and rating_key in seen_rating_keys:
+                        continue
+                    if rating_key:
+                        seen_rating_keys.add(rating_key)
+                    found_movies.append(chosen)
+                    matched_pairs.append((raw, chosen))
+                except (AttributeError, TypeError, ValueError) as e:
+                    print(f"Error searching for '{raw}': {e}")
                     not_found.append(raw)
-            except (AttributeError, TypeError, ValueError) as e:
-                print(f"Error searching for '{raw}': {e}")
-                not_found.append(raw)
+        except UserAbort:
+            print("Canceled. Returning to main menu.")
+            pause()
+            continue
 
         print(f"\nFound {len(found_movies)} movies in Plex.")
         if not_found:
@@ -509,7 +579,12 @@ def run_collection_builder():
 
         print("\nMovies to add to collection:")
         for i, mv in enumerate(found_movies, 1):
-            print(f"{i}. {mv.title}")
+            print(f"{i}. {format_plex_item(mv)}")
+
+        print("\nSelections:")
+        for raw, mv in matched_pairs:
+            print(f"- {raw} -> {format_plex_item(mv)}")
+
         confirm = (
             input("Proceed to create collection with these movies? (y/n): ")
             .strip()
@@ -517,6 +592,12 @@ def run_collection_builder():
         )
         if confirm != "y":
             print("Aborted by user.")
+            pause()
+            continue
+
+        if dry_run:
+            print(f"\n[DRY RUN] Would create collection '{collection_name}'.")
+            print(f"[DRY RUN] Would include {len(found_movies)} movies.")
             pause()
             continue
 
