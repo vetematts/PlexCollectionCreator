@@ -16,6 +16,12 @@ from styling import print_plex_logo_ascii
 
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config.json")
 
+def is_escape(value: str) -> bool:
+    if value is None:
+        return False
+    value = value.strip()
+    return value == "\x1b" or value.lower() in ("esc", "escape")
+
 
 def load_config():
     # Load credentials from config.json, or return empty defaults if it doesn't exist
@@ -96,11 +102,11 @@ def run_collection_builder():
 
         while True:
             choice = input(
-                "Pick a number, 's' to skip, or 'q' to cancel: "
+                "Pick a number, 's' to skip, or 'q'/'Esc' to cancel: "
             ).strip().lower()
             if choice in ("s", "skip"):
                 return None
-            if choice in ("q", "quit"):
+            if choice in ("q", "quit") or is_escape(choice):
                 raise UserAbort()
             if choice.isdigit():
                 idx = int(choice)
@@ -150,6 +156,8 @@ def run_collection_builder():
             + f"{emojis.INFO}  You can return to this menu after each collection is created.\n"
         )
         mode = input("Select an option: ").strip()
+        if is_escape(mode):
+            mode = "6"
 
         if mode not in ("1", "2", "3", "4", "5", "6"):
             print("Invalid selection. Please choose a valid menu option (1-6).")
@@ -213,6 +221,8 @@ def run_collection_builder():
                         + f" {emojis.BACK} Return to main menu\n"
                     )
                     choice = input("Select an option: ").strip()
+                    if is_escape(choice):
+                        break
                     if choice == "1":
                         config["PLEX_TOKEN"] = input("Enter new Plex Token: ").strip()
                         save_config(config)
@@ -304,9 +314,9 @@ def run_collection_builder():
         }
 
         if mode == "1":
-            print("Type 'back' to return to the main menu.")
+            print("Type 'back' or 'Esc' to return to the main menu.")
             collection_name = input("Enter a name for your new collection: ").strip()
-            if collection_name.lower() == "back":
+            if collection_name.lower() == "back" or is_escape(collection_name):
                 continue
             plex_token = config.get("PLEX_TOKEN")
             plex_url = config.get("PLEX_URL")
@@ -632,11 +642,11 @@ def pick_from_list_case_insensitive(prompt, choices, back_allowed=True):
     lowered = {c.lower(): c for c in choices}
     while True:
         choice = input(prompt).strip()
-        if back_allowed and choice.lower() == "back":
+        if back_allowed and (choice.lower() == "back" or is_escape(choice)):
             return None
         if choice.lower() in lowered:
             return lowered[choice.lower()]
-        print("Unknown option. Please type one of the listed items, or 'back'.")
+        print("Unknown option. Please type one of the listed items, or 'back'/'Esc'.")
 
 
 def print_list(items, columns=3, padding=28):
