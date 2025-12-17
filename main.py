@@ -104,7 +104,7 @@ def run_collection_builder():
         print(Fore.RED + "5." + Fore.RESET + f" {emojis.EXIT} Exit\n")
         print(
             Fore.LIGHTBLACK_EX
-            + f"{emojis.INFO} You can return to this menu after each collection is created.\n"
+            + f"{emojis.INFO}  You can return to this menu after each collection is created.\n"
         )
         mode = input().strip()
 
