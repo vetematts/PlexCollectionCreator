@@ -632,8 +632,70 @@ def process_and_create_collection(collection_name, titles, config, pause_fn):
     seen_rating_keys = set()
 
     # This is the logic that was previously in run_collection_builder
-    # ... (The rest of the Plex processing logic will go here in the next step)
+    try:
+        for raw in titles:
+            title, year = extract_title_and_year(raw)
+            try:
+                results = (
+                    library.search(title, year=year)
+                    if year
+                    else library.search(title)
+                )
+                if not results and year:
+                    results = library.search(title)
 
+                chosen = pick_plex_match(raw, results)
+                if chosen is None:
+                    not_found.append(raw)
+                    continue
+
+                rating_key = str(getattr(chosen, "ratingKey", ""))
+                if rating_key and rating_key in seen_rating_keys:
+                    continue
+                if rating_key:
+                    seen_rating_keys.add(rating_key)
+                found_movies.append(chosen)
+                matched_pairs.append((raw, chosen))
+            except (AttributeError, TypeError, ValueError) as e:
+                print(f"Error searching for '{raw}': {e}")
+                not_found.append(raw)
+    except UserAbort:
+        print("Canceled. Returning to main menu.")
+        pause_fn()
+        return
+
+    print(f"\nFound {len(found_movies)} movies in Plex.")
+    if not_found and len(not_found) < len(titles):
+        print(f"Couldn’t find {len(not_found)}:")
+        for nf in not_found:
+            print(f"- {nf}")
+
+    if not found_movies:
+        print(f"{emojis.CROSS} No valid matches found — collection not created.")
+        pause_fn()
+        return
+
+    print("\nMovies to add to collection:")
+    for i, mv in enumerate(found_movies, 1):
+        print(f"{i}. {format_plex_item(mv)}")
+
+    print("\nSelections:")
+    for raw, mv in matched_pairs:
+        print(f"- {raw} -> {format_plex_item(mv)}")
+
+    confirm = (
+        input("Proceed to create collection with these movies? (y/n): ")
+        .strip()
+        .lower()
+    )
+    if confirm != "y":
+        print("Aborted by user.")
+        pause_fn()
+        return
+
+    library.createCollection(collection_name, items=found_movies)
+    print(f"\n{emojis.CHECK} Created collection '{collection_name}' with {len(found_movies)} movies.")
+    pause_fn()
 
 def run_collection_builder():
     # Main interactive loop. Stays in a single while-loop and avoids repeating run_collection_builder().
@@ -692,42 +754,6 @@ def run_collection_builder():
 
 
         process_and_create_collection(collection_name, titles, config, pause)
-
-        print(f"\nFound {len(found_movies)} movies in Plex.")
-        if not_found and len(not_found) < len(titles):
-            print(f"Couldn’t find {len(not_found)}:")
-            for nf in not_found:
-                print(f"- {nf}")
-
-        if not found_movies:
-            print(f"{emojis.CROSS} No valid matches found — collection not created.")
-            pause()
-            continue
-
-        print("\nMovies to add to collection:")
-        for i, mv in enumerate(found_movies, 1):
-            print(f"{i}. {format_plex_item(mv)}")
-
-        print("\nSelections:")
-        for raw, mv in matched_pairs:
-            print(f"- {raw} -> {format_plex_item(mv)}")
-
-        confirm = (
-            input("Proceed to create collection with these movies? (y/n): ")
-            .strip()
-            .lower()
-        )
-        if confirm != "y":
-            print("Aborted by user.")
-            pause()
-            continue
-
-        library.createCollection(collection_name, items=found_movies)
-        print(
-            f"\n{emojis.CHECK} Created collection '{collection_name}' with {len(found_movies)} movies."
-        )
-        pause()
-        # loop continues to main menu
 
 
 def load_fallback_data(section):
