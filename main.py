@@ -363,14 +363,9 @@ def run_collection_builder():
             return None
         return results[idx - 1]
 
-    dry_run = False
     while True:
         welcome()
         check_credentials()
-        print(
-            Fore.LIGHTBLACK_EX
-            + f"{emojis.INFO}  Dry run: {'ON' if dry_run else 'OFF'} (no Plex changes when ON)\n"
-        )
 
         # Main menu
         print(Fore.BLUE + f"{emojis.CLAPPER} MAIN MENU:\n")
@@ -391,40 +386,25 @@ def run_collection_builder():
             Fore.YELLOW
             + "4."
             + Fore.RESET
-            + f" {emojis.SETTINGS}  Configure Credentials (Plex / TMDb)\n"
+            + f" {emojis.SETTINGS}  Settings & Credentials\n"
         )
-        print(
-            Fore.CYAN
-            + "5."
-            + Fore.RESET
-            + f" {emojis.REPEAT} Toggle Dry Run (currently {'ON' if dry_run else 'OFF'})\n"
-        )
-        print(Fore.RED + "6." + Fore.RESET + f" {emojis.EXIT} Exit\n")
+        print(Fore.RED + "5." + Fore.RESET + f" {emojis.EXIT} Exit\n")
         print(
             Fore.LIGHTBLACK_EX
             + f"{emojis.INFO}  You can return to this menu after each collection is created.\n"
         )
-        mode = read_menu_choice("Select an option (Esc to exit): ", set("123456"))
+        mode = read_menu_choice("Select an option (Esc to exit): ", set("12345"))
         if mode == "ESC":
-            mode = "6"
+            mode = "5"
 
-        if mode not in ("1", "2", "3", "4", "5", "6"):
-            print("Invalid selection. Please choose a valid menu option (1-6).")
+        if mode not in ("1", "2", "3", "4", "5"):
+            print("Invalid selection. Please choose a valid menu option (1-5).")
             pause()
             continue
-
-        if mode == "6":
-            print(f"{emojis.WAVE} Goodbye!")
-            return
 
         if mode == "5":
-            dry_run = not dry_run
-            print(
-                Fore.GREEN
-                + f"{emojis.CHECK} Dry run is now {'ON' if dry_run else 'OFF'}."
-            )
-            pause()
-            continue
+            print(f"{emojis.WAVE} Goodbye!")
+            return
 
         # Credentials settings
         if mode == "4":
@@ -859,12 +839,6 @@ def run_collection_builder():
         )
         if confirm != "y":
             print("Aborted by user.")
-            pause()
-            continue
-
-        if dry_run:
-            print(f"\n[DRY RUN] Would create collection '{collection_name}'.")
-            print(f"[DRY RUN] Would include {len(found_movies)} movies.")
             pause()
             continue
 
