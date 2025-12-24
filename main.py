@@ -211,10 +211,19 @@ def read_line(prompt: str, allow_escape: bool = True) -> Optional[str]:
 
 def load_config():
     # Load credentials from config.json, or return empty defaults if it doesn't exist
+    defaults = {
+        "PLEX_TOKEN": "",
+        "PLEX_URL": "",
+        "TMDB_API_KEY": "",
+        "PLEX_LIBRARY": "Movies",
+    }
     if not os.path.exists(CONFIG_FILE):
-        return {"PLEX_TOKEN": "", "PLEX_URL": "", "TMDB_API_KEY": ""}
+        return defaults.copy()
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    for key, value in defaults.items():
+        data.setdefault(key, value)
+    return data
 
 
 def save_config(cfg):
@@ -222,6 +231,41 @@ def save_config(cfg):
     # Accepts a dictionary of credentials.
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(cfg, f, indent=4)
+
+
+def test_plex_connection(cfg):
+    """
+    Attempts to connect to Plex and access the configured movie library.
+    Returns True on success, False otherwise.
+    """
+    plex_token = cfg.get("PLEX_TOKEN", "").strip()
+    plex_url = cfg.get("PLEX_URL", "").strip()
+    library_name = (cfg.get("PLEX_LIBRARY") or "Movies").strip() or "Movies"
+
+    if not plex_token or not plex_url:
+        print(
+            Fore.YELLOW
+            + f"{emojis.INFO} Skipping Plex connection test (token or URL missing).\n"
+        )
+        return False
+
+    try:
+        plex_manager = PlexManager(plex_token, plex_url)
+        library = plex_manager.get_movie_library(library_name)
+        if not library:
+            print(
+                Fore.RED
+                + f"{emojis.CROSS} Connected to Plex, but library '{library_name}' was not found.\n"
+            )
+            return False
+        print(
+            Fore.GREEN
+            + f"{emojis.CHECK} Plex connection successful. Library '{library_name}' is available.\n"
+        )
+        return True
+    except Exception as e:
+        print(Fore.RED + f"{emojis.CROSS} Plex connection test failed: {e}\n")
+        return False
 
 
 init(autoreset=True)
@@ -257,8 +301,10 @@ def check_credentials():
         f"Plex URL: {emojis.CHECK if current_config.get('PLEX_URL', '').strip() else emojis.CROSS}"
     )
     print(
-        f"TMDb API Key: {emojis.CHECK if current_config.get('TMDB_API_KEY', '').strip() else emojis.CROSS}\n"
+        f"TMDb API Key: {emojis.CHECK if current_config.get('TMDB_API_KEY', '').strip() else emojis.CROSS}"
     )
+    plex_library = current_config.get("PLEX_LIBRARY", "").strip() or "Movies"
+    print(f"Plex Library: {emojis.CHECK} {plex_library}\n")
 
 
 def handle_main_menu() -> str:
@@ -307,24 +353,37 @@ def handle_credentials_menu():
         print(Fore.YELLOW + "1." + Fore.RESET + f" {emojis.KEY} Set Plex Token\n")
         print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
         print(Fore.BLUE + "3." + Fore.RESET + f" {emojis.CLAPPER} Set TMDb API Key\n")
-        print(Fore.GREEN + "4." + Fore.RESET + f" {emojis.BOOK} Show current values\n")
-        print(Fore.RED + "5." + Fore.RESET + f" {emojis.BACK} Return to main menu\n")
-        choice = read_menu_choice("Select an option (Esc to go back): ", set("12345"))
+        print(Fore.CYAN + "4." + Fore.RESET + f" {emojis.MOVIE} Set Plex Library Name\n")
+        print(Fore.GREEN + "5." + Fore.RESET + f" {emojis.BOOK} Show current values\n")
+        print(Fore.RED + "6." + Fore.RESET + f" {emojis.BACK} Return to main menu\n")
+        choice = read_menu_choice("Select an option (Esc to go back): ", set("123456"))
 
         def pause(msg: str = "Press Enter to return to the menu..."):
             input(msg)
 
-        if choice == "ESC" or choice == "5":
+        if choice == "ESC" or choice == "6":
             break
         if choice == "1":
-            config["PLEX_TOKEN"] = input("Enter new Plex Token: ").strip()
+            new_token = input("Enter new Plex Token: ").strip()
+            if not new_token:
+                print(Fore.RED + f"{emojis.CROSS} Plex Token cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_TOKEN"] = new_token
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} Plex Token saved successfully!\n")
+            test_plex_connection(config)
             pause()
         elif choice == "2":
-            config["PLEX_URL"] = input("Enter new Plex URL: ").strip()
+            new_url = input("Enter new Plex URL: ").strip()
+            if not new_url:
+                print(Fore.RED + f"{emojis.CROSS} Plex URL cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_URL"] = new_url
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} Plex URL saved successfully!\n")
+            test_plex_connection(config)
             pause()
         elif choice == "3":
             config["TMDB_API_KEY"] = input("Enter new TMDb API Key: ").strip()
@@ -332,6 +391,23 @@ def handle_credentials_menu():
             print(Fore.GREEN + f"{emojis.CHECK} TMDb API Key saved successfully!\n")
             pause()
         elif choice == "4":
+            current_library = config.get("PLEX_LIBRARY", "Movies")
+            new_library = input(
+                f"Enter Plex library name (current: {current_library}): "
+            ).strip()
+            if not new_library:
+                print(Fore.RED + f"{emojis.CROSS} Plex library name cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_LIBRARY"] = new_library
+            save_config(config)
+            print(
+                Fore.GREEN
+                + f"{emojis.CHECK} Plex library set to '{config['PLEX_LIBRARY']}'!\n"
+            )
+            test_plex_connection(config)
+            pause()
+        elif choice == "5":
             if os.name == "nt":
                 os.system("cls")
             else:
@@ -619,9 +695,10 @@ def process_and_create_collection(collection_name, titles, config, pause_fn):
 
     try:
         plex_manager = PlexManager(plex_token, plex_url)
-        library = plex_manager.get_movie_library("Movies")
+        library_name = (config.get("PLEX_LIBRARY") or "Movies").strip() or "Movies"
+        library = plex_manager.get_movie_library(library_name)
         if not library:
-            raise ConnectionError("Movie library not found.")
+            raise ConnectionError(f"Movie library '{library_name}' not found.")
     except Exception as e:
         print(Fore.RED + f"\n{emojis.CROSS} Could not connect to Plex: {e}")
         print("Please make sure your Plex Token and URL are correct.\n")
