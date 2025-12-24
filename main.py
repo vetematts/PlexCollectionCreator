@@ -268,6 +268,30 @@ def test_plex_connection(cfg):
         return False
 
 
+def test_tmdb_connection(cfg):
+    """
+    Attempts a lightweight TMDb call to validate the API key.
+    Returns True on success, False otherwise.
+    """
+    api_key = cfg.get("TMDB_API_KEY", "").strip()
+    if not api_key:
+        print(
+            Fore.YELLOW
+            + f"{emojis.INFO} Skipping TMDb connection test (API key missing).\n"
+        )
+        return False
+
+    try:
+        tmdb = TMDbSearch(api_key)
+        # Perform a minimal search to validate the key.
+        tmdb.search_movies("test", limit=1)
+        print(Fore.GREEN + f"{emojis.CHECK} TMDb connection successful.\n")
+        return True
+    except Exception as e:
+        print(Fore.RED + f"{emojis.CROSS} TMDb connection test failed: {e}\n")
+        return False
+
+
 init(autoreset=True)
 
 config = load_config()
@@ -354,14 +378,15 @@ def handle_credentials_menu():
         print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
         print(Fore.BLUE + "3." + Fore.RESET + f" {emojis.CLAPPER} Set TMDb API Key\n")
         print(Fore.CYAN + "4." + Fore.RESET + f" {emojis.MOVIE} Set Plex Library Name\n")
-        print(Fore.GREEN + "5." + Fore.RESET + f" {emojis.BOOK} Show current values\n")
-        print(Fore.RED + "6." + Fore.RESET + f" {emojis.BACK} Return to main menu\n")
-        choice = read_menu_choice("Select an option (Esc to go back): ", set("123456"))
+        print(Fore.GREEN + "5." + Fore.RESET + f" {emojis.INFO} Test Connections (Plex + TMDb)\n")
+        print(Fore.GREEN + "6." + Fore.RESET + f" {emojis.BOOK} Show current values\n")
+        print(Fore.RED + "7." + Fore.RESET + f" {emojis.BACK} Return to main menu\n")
+        choice = read_menu_choice("Select an option (Esc to go back): ", set("1234567"))
 
         def pause(msg: str = "Press Enter to return to the menu..."):
             input(msg)
 
-        if choice == "ESC" or choice == "6":
+        if choice == "ESC" or choice == "7":
             break
         if choice == "1":
             new_token = input("Enter new Plex Token: ").strip()
@@ -389,6 +414,7 @@ def handle_credentials_menu():
             config["TMDB_API_KEY"] = input("Enter new TMDb API Key: ").strip()
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} TMDb API Key saved successfully!\n")
+            test_tmdb_connection(config)
             pause()
         elif choice == "4":
             current_library = config.get("PLEX_LIBRARY", "Movies")
@@ -408,6 +434,11 @@ def handle_credentials_menu():
             test_plex_connection(config)
             pause()
         elif choice == "5":
+            print(Fore.CYAN + f"{emojis.INFO} Running connection tests...\n")
+            test_plex_connection(config)
+            test_tmdb_connection(config)
+            pause()
+        elif choice == "6":
             if os.name == "nt":
                 os.system("cls")
             else:
