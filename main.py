@@ -233,6 +233,41 @@ def save_config(cfg):
         json.dump(cfg, f, indent=4)
 
 
+def test_plex_connection(cfg):
+    """
+    Attempts to connect to Plex and access the configured movie library.
+    Returns True on success, False otherwise.
+    """
+    plex_token = cfg.get("PLEX_TOKEN", "").strip()
+    plex_url = cfg.get("PLEX_URL", "").strip()
+    library_name = (cfg.get("PLEX_LIBRARY") or "Movies").strip() or "Movies"
+
+    if not plex_token or not plex_url:
+        print(
+            Fore.YELLOW
+            + f"{emojis.INFO} Skipping Plex connection test (token or URL missing).\n"
+        )
+        return False
+
+    try:
+        plex_manager = PlexManager(plex_token, plex_url)
+        library = plex_manager.get_movie_library(library_name)
+        if not library:
+            print(
+                Fore.RED
+                + f"{emojis.CROSS} Connected to Plex, but library '{library_name}' was not found.\n"
+            )
+            return False
+        print(
+            Fore.GREEN
+            + f"{emojis.CHECK} Plex connection successful. Library '{library_name}' is available.\n"
+        )
+        return True
+    except Exception as e:
+        print(Fore.RED + f"{emojis.CROSS} Plex connection test failed: {e}\n")
+        return False
+
+
 init(autoreset=True)
 
 config = load_config()
@@ -329,14 +364,26 @@ def handle_credentials_menu():
         if choice == "ESC" or choice == "6":
             break
         if choice == "1":
-            config["PLEX_TOKEN"] = input("Enter new Plex Token: ").strip()
+            new_token = input("Enter new Plex Token: ").strip()
+            if not new_token:
+                print(Fore.RED + f"{emojis.CROSS} Plex Token cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_TOKEN"] = new_token
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} Plex Token saved successfully!\n")
+            test_plex_connection(config)
             pause()
         elif choice == "2":
-            config["PLEX_URL"] = input("Enter new Plex URL: ").strip()
+            new_url = input("Enter new Plex URL: ").strip()
+            if not new_url:
+                print(Fore.RED + f"{emojis.CROSS} Plex URL cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_URL"] = new_url
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} Plex URL saved successfully!\n")
+            test_plex_connection(config)
             pause()
         elif choice == "3":
             config["TMDB_API_KEY"] = input("Enter new TMDb API Key: ").strip()
@@ -348,12 +395,17 @@ def handle_credentials_menu():
             new_library = input(
                 f"Enter Plex library name (current: {current_library}): "
             ).strip()
-            config["PLEX_LIBRARY"] = new_library or "Movies"
+            if not new_library:
+                print(Fore.RED + f"{emojis.CROSS} Plex library name cannot be empty. Not saved.\n")
+                pause()
+                continue
+            config["PLEX_LIBRARY"] = new_library
             save_config(config)
             print(
                 Fore.GREEN
                 + f"{emojis.CHECK} Plex library set to '{config['PLEX_LIBRARY']}'!\n"
             )
+            test_plex_connection(config)
             pause()
         elif choice == "5":
             if os.name == "nt":
@@ -643,7 +695,7 @@ def process_and_create_collection(collection_name, titles, config, pause_fn):
 
     try:
         plex_manager = PlexManager(plex_token, plex_url)
-        library_name = config.get("PLEX_LIBRARY") or "Movies"
+        library_name = (config.get("PLEX_LIBRARY") or "Movies").strip() or "Movies"
         library = plex_manager.get_movie_library(library_name)
         if not library:
             raise ConnectionError(f"Movie library '{library_name}' not found.")
