@@ -39,7 +39,7 @@ YELLOW_ZONES = {
 }
 
 def print_plex_logo_ascii():
-    lines = PLEX_LOGO_ASCII.strip().splitlines()
+    lines = PLEX_LOGO_ASCII.strip("\n").splitlines()
     for i, line in enumerate(lines):
         if i in YELLOW_ZONES:
             start, end = YELLOW_ZONES[i]
