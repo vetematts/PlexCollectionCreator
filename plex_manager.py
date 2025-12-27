@@ -36,3 +36,34 @@ class PlexManager:
             media.addCollection(collection_name)
             media.reload()
             print(f"{emojis.CHECK} Added '{title}' to collection: {collection_name}")
+
+    def set_tmdb_poster(self, item, include_locked=False):
+        """
+        Checks the available posters for an item and selects the TMDb one if available.
+        """
+        # Providers we want to replace if currently selected
+        REPLACE_PROVIDERS = ['gracenote', 'plex', 'local', None]
+        PREFERRED_PROVIDER = 'tmdb'
+
+        try:
+            # 'thumb' is the internal field name for posters in Plex
+            if item.isLocked('thumb') and not include_locked:
+                print(f"  - {emojis.KEY} Locked poster for '{item.title}'. Skipping.")
+                return
+
+            posters = item.posters()
+            if not posters:
+                print(f"  - {emojis.CROSS} No posters found for '{item.title}'.")
+                return
+
+            # Find the poster provided by TMDb
+            tmdb_poster = next((p for p in posters if p.provider == PREFERRED_PROVIDER), None)
+
+            if tmdb_poster:
+                tmdb_poster.select()
+                print(f"  - {emojis.CHECK} Selected TMDb poster for '{item.title}'.")
+            else:
+                print(f"  - {emojis.INFO} No TMDb poster found for '{item.title}'.")
+
+        except Exception as e:
+            print(f"  - {emojis.CROSS} Error setting poster for '{item.title}': {e}")
