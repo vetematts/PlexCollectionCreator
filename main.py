@@ -9,7 +9,7 @@ import json
 import re
 import sys
 import contextlib
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from colorama import init, Fore
@@ -237,7 +237,7 @@ def save_config(cfg):
 
 
 def _now_iso():
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def test_plex_connection(cfg):
@@ -438,10 +438,7 @@ def handle_credentials_menu():
                 continue
             config["PLEX_LIBRARY"] = new_library
             save_config(config)
-            print(
-                Fore.GREEN
-                + f"{emojis.CHECK} Plex library set to '{config['PLEX_LIBRARY']}'!\n"
-            )
+            print()
             test_plex_connection(config)
             pause()
         elif choice == "5":
