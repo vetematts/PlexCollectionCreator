@@ -495,6 +495,8 @@ def run_manual_mode(pause_fn):
     """Handles the manual movie entry mode. Returns (collection_name, titles) or (None, None)."""
     if os.name == "nt": os.system("cls")
     else: os.system("clear")
+    print(Fore.CYAN + f"{emojis.MANUAL} Manual Entry")
+    print(Fore.GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     collection_name = read_line(
         "Enter a name for your new collection (Esc to cancel): "
     )
