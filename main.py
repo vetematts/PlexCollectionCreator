@@ -401,7 +401,10 @@ def handle_credentials_menu():
         if choice == "ESC" or choice == "7":
             break
         if choice == "1":
-            new_token = input("Enter new Plex Token: ").strip()
+            new_token = read_line("Enter new Plex Token (Esc to cancel): ")
+            if new_token is None:
+                continue
+            new_token = new_token.strip()
             if not new_token:
                 print(Fore.RED + f"{emojis.CROSS} Plex Token cannot be empty. Not saved.\n")
                 pause()
@@ -412,7 +415,10 @@ def handle_credentials_menu():
             test_plex_connection(config)
             pause()
         elif choice == "2":
-            new_url = input("Enter new Plex URL: ").strip()
+            new_url = read_line("Enter new Plex URL (Esc to cancel): ")
+            if new_url is None:
+                continue
+            new_url = new_url.strip()
             if not new_url:
                 print(Fore.RED + f"{emojis.CROSS} Plex URL cannot be empty. Not saved.\n")
                 pause()
@@ -431,16 +437,20 @@ def handle_credentials_menu():
             test_plex_connection(config)
             pause()
         elif choice == "3":
-            config["TMDB_API_KEY"] = input("Enter new TMDb API Key: ").strip()
+            new_key = read_line("Enter new TMDb API Key (Esc to cancel): ")
+            if new_key is None:
+                continue
+            config["TMDB_API_KEY"] = new_key.strip()
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} TMDb API Key saved successfully!\n")
             test_tmdb_connection(config)
             pause()
         elif choice == "4":
             current_library = config.get("PLEX_LIBRARY", "Movies")
-            new_library = input(
-                f"Enter Plex library name (current: {current_library}): "
-            ).strip()
+            new_library = read_line(f"Enter Plex library name (current: {current_library}) (Esc to cancel): ")
+            if new_library is None:
+                continue
+            new_library = new_library.strip()
             if not new_library:
                 print(Fore.RED + f"{emojis.CROSS} Plex library name cannot be empty. Not saved.\n")
                 pause()
