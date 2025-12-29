@@ -520,6 +520,7 @@ def run_franchise_mode(tmdb, pause_fn):
     """Handles the franchise/series mode. Returns (collection_name, titles) or (None, None)."""
     if os.name == "nt": os.system("cls")
     else: os.system("clear")
+    print(Fore.CYAN + f"{emojis.FRANCHISE}  Known Franchise Mode")
     known_collections = {
         "Alien": 8091, "Back to the Future": 264, "Despicable Me": 86066,
         "Evil Dead": 1960, "Fast & Furious": 9485, "Harry Potter": 1241,
@@ -534,15 +535,15 @@ def run_franchise_mode(tmdb, pause_fn):
     titles = []
 
     if not tmdb:
-        print(Fore.RED + f"{emojis.CROSS} TMDb API key not provided. Using fallback hardcoded titles.\n")
+        print(Fore.RED + f"\n{emojis.CROSS} TMDb API key not provided. Using fallback hardcoded titles.\n")
         franchises_data = load_fallback_data("Franchises")
-        print_grid(franchises_data.keys(), columns=3, padding=28, title=f"{emojis.FRANCHISE}  Available Franchises:")
+        print_grid(franchises_data.keys(), columns=3, padding=28, title=Fore.GREEN + "Available Franchises:")
         choice = pick_from_list_case_insensitive("\n" + Fore.LIGHTBLACK_EX + f"{emojis.REPEAT} Type the franchise name (or 'back' to return): ", franchises_data.keys())
         if choice is None:
             return None, None
         titles = franchises_data[choice]
     else:
-        print_grid(known_collections.keys(), columns=3, padding=28, title=f"{emojis.FRANCHISE}  Available Collections (TMDb):")
+        print_grid(known_collections.keys(), columns=3, padding=28, title=Fore.GREEN + "\nAvailable Collections (TMDb):")
         choice = pick_from_list_case_insensitive("\n" + Fore.LIGHTBLACK_EX + f"{emojis.REPEAT} Type the collection name (or 'back' to return): ", known_collections.keys())
         if choice is None:
             return None, None
@@ -566,6 +567,7 @@ def run_studio_mode(tmdb, api_key, pause_fn):
     """Handles the studio/keyword mode. Returns (collection_name, titles) or (None, None)."""
     if os.name == "nt": os.system("cls")
     else: os.system("clear")
+    print(Fore.CYAN + f"{emojis.STUDIO}  Studio / Keyword Mode")
     studio_map = {
         "a24": {"company": 41077}, "pixar": {"company": 3},
         "studio ghibli": {"company": 10342}, "mcu": {"keyword": 180547},
@@ -574,9 +576,9 @@ def run_studio_mode(tmdb, api_key, pause_fn):
     titles = []
 
     if not tmdb:
-        print(Fore.RED + f"{emojis.CROSS} TMDb API key not provided. Using fallback hardcoded titles.\n")
+        print(Fore.RED + f"\n{emojis.CROSS} TMDb API key not provided. Using fallback hardcoded titles.\n")
         studios_data = load_fallback_data("Studios")
-        print_grid(studios_data.keys(), columns=3, padding=24, title=f"{emojis.STUDIO}  Available Studios:")
+        print_grid(studios_data.keys(), columns=3, padding=24, title=Fore.GREEN + "Available Studios:")
         choice = pick_from_list_case_insensitive("\n" + Fore.LIGHTBLACK_EX + f"{emojis.REPEAT} Type the studio name (or 'back' to return): ", studios_data.keys())
         if choice is None:
             return None, None
@@ -588,7 +590,7 @@ def run_studio_mode(tmdb, api_key, pause_fn):
             pretty = key.upper() if key in ("mcu", "dceu") else key.title()
             pretty_names.append(pretty)
             pretty_to_key[pretty.lower()] = key
-        print_grid(pretty_names, columns=3, padding=24, title=f"{emojis.STUDIO}  Available Studios:")
+        print_grid(pretty_names, columns=3, padding=24, title=Fore.GREEN + "\nAvailable Studios:")
         choice_pretty = pick_from_list_case_insensitive("\n" + Fore.LIGHTBLACK_EX + f"{emojis.REPEAT} Type the studio name (or 'back' to return): ", pretty_names)
         if choice_pretty is None:
             return None, None
