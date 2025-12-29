@@ -3,7 +3,7 @@
 
 from colorama import Fore, Style
 
-# Custom Plex Yellow Color (Hex: #EBAF01 -> RGB: 235, 175, 1)
+# Custom Plex Yellow Colour (Hex: #EBAF01 -> RGB: 235, 175, 1)
 PLEX_YELLOW = "\033[38;2;235;175;1m"
 
 PLEX_LOGO_ASCII = r"""

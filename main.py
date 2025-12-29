@@ -11,6 +11,7 @@ import sys
 import contextlib
 from datetime import datetime, timezone
 from typing import Optional
+import difflib
 
 from colorama import init, Fore
 import emojis
@@ -30,7 +31,7 @@ def is_escape(value: str) -> bool:
 def _raw_input_mode():
     """
     Temporarily switch stdin into a mode where we can read single keypresses.
-    Falls back to normal behavior when stdin isn't a TTY.
+    Falls back to normal behaviour when stdin isn't a TTY.
     """
     if not sys.stdin.isatty():
         yield
@@ -107,69 +108,6 @@ def read_menu_choice(prompt: str, valid: set[str]) -> str:
             if candidate in valid:
                 print(candidate)
                 return candidate
-
-def read_number(max_value: int, prompt: str) -> Optional[int]:
-    """
-    Reads a number up to max_value, with real Escape support (no Enter required for Esc).
-    Returns None if user presses Esc.
-    Uses raw key input when possible; otherwise falls back to input().
-    """
-    if not sys.stdin.isatty():
-        while True:
-            raw = input(prompt).strip()
-            if is_escape(raw):
-                return None
-            if raw.isdigit():
-                value = int(raw)
-                if 1 <= value <= max_value:
-                    return value
-            print("Invalid selection.")
-
-    print(prompt, end="", flush=True)
-    buf = []
-    while True:
-        key = read_keypress()
-        if key is None:
-            raw = input().strip()
-            if is_escape(raw):
-                return None
-            if raw.isdigit():
-                value = int(raw)
-                if 1 <= value <= max_value:
-                    return value
-            print("Invalid selection.")
-            print(prompt, end="", flush=True)
-            buf = []
-            continue
-
-        if key == "ESC":
-            print()
-            return None
-        if key == "ENTER":
-            if not buf:
-                continue
-            raw = "".join(buf)
-            if raw.isdigit():
-                value = int(raw)
-                if 1 <= value <= max_value:
-                    print()
-                    return value
-            print("\nInvalid selection.")
-            print(prompt, end="", flush=True)
-            buf = []
-            continue
-        if key == "BACKSPACE":
-            if buf:
-                buf.pop()
-                sys.stdout.write("\b \b")
-                sys.stdout.flush()
-            continue
-
-        if len(key) == 1 and key.isdigit():
-            buf.append(key)
-            sys.stdout.write(key)
-            sys.stdout.flush()
-
 
 def read_line(prompt: str, allow_escape: bool = True) -> Optional[str]:
     """
@@ -325,7 +263,7 @@ def welcome():
 
 def check_credentials():
     # Check and display the status of the loaded credentials.
-    # Shows which credentials are set using color and emoji indicators.
+    # Shows which credentials are set using colour and emoji indicators.
     current_config = load_config()
     print(Fore.GREEN + f"{emojis.KEY} Loaded Credentials:")
     print(
@@ -902,8 +840,10 @@ def run_poster_tool(config, pause_fn):
         items_to_process = library.all()
 
     if items_to_process:
-        print(f"Processing {len(items_to_process)} items...\n")
-        for item in items_to_process:
+        total = len(items_to_process)
+        print(f"Processing {total} items...\n")
+        for i, item in enumerate(items_to_process, 1):
+            print(f"[{i}/{total}] Checking '{item.title}'...")
             pm.set_tmdb_poster(item)
             pm.set_tmdb_art(item)
         print(f"\n{emojis.CHECK} Finished processing artwork.")
@@ -1004,7 +944,13 @@ def pick_from_list_case_insensitive(prompt, choices, back_allowed=True):
         choice = choice.strip()
         if choice.lower() in lowered:
             return lowered[choice.lower()]
-        print("Unknown option. Please type one of the listed items, or Esc to cancel.")
+
+        # Fuzzy match suggestion
+        matches = difflib.get_close_matches(choice, choices, n=1, cutoff=0.6)
+        if matches:
+            print(f"Unknown option. Did you mean '{matches[0]}'?")
+        else:
+            print("Unknown option. Please type one of the listed items, or Esc to cancel.")
 
 
 def print_list(items, columns=3, padding=28):
