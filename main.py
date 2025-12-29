@@ -321,7 +321,6 @@ def welcome():
         os.system("clear")
     print_plex_logo_ascii()
     print(Fore.CYAN + f"\n{emojis.MOVIE} Welcome to Plex Toolkit!")
-    print(Fore.YELLOW + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
 
 def check_credentials():
@@ -385,7 +384,6 @@ def handle_credentials_menu():
         else:  # For macOS and Linux
             os.system("clear")
         print(Fore.CYAN + f"{emojis.CONFIGURE} CONFIGURE CREDENTIALS")
-        print(Fore.GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
         print(Fore.YELLOW + "1." + Fore.RESET + f" {emojis.KEY} Set Plex Token\n")
         print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
         print(Fore.BLUE + "3." + Fore.RESET + f" {emojis.CLAPPER} Set TMDb API Key\n")
@@ -496,7 +494,6 @@ def run_manual_mode(pause_fn):
     if os.name == "nt": os.system("cls")
     else: os.system("clear")
     print(Fore.CYAN + f"{emojis.MANUAL} Manual Entry")
-    print(Fore.GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     collection_name = read_line(
         "Enter a name for your new collection (Esc to cancel): "
     )
@@ -858,7 +855,6 @@ def run_poster_tool(config, pause_fn):
     else: os.system("clear")
 
     print(Fore.CYAN + f"{emojis.CONFIGURE} TOOLS: Fix Artwork (TMDb)")
-    print(Fore.GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     print("This tool scans movies and selects the TMDb poster and background if available.\n")
 
     print(Fore.YELLOW + "1." + Fore.RESET + " Fix artwork for a specific Collection")
@@ -988,7 +984,6 @@ def print_grid(names, columns=3, padding=28, title=None, title_emoji=None):
     # Prints the list of titles in columns for readability
     if title:
         print((title_emoji or "") + " " + title)
-        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     sorted_names = sorted(names)
     rows = [sorted_names[i : i + columns] for i in range(0, len(sorted_names), columns)]
     for row in rows:
