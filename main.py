@@ -417,6 +417,14 @@ def handle_credentials_menu():
                 print(Fore.RED + f"{emojis.CROSS} Plex URL cannot be empty. Not saved.\n")
                 pause()
                 continue
+
+            # Sanitize: remove spaces (common when copying from Plex UI: "IP : Port")
+            new_url = new_url.replace(" ", "")
+            # Auto-add http:// if missing
+            if not new_url.lower().startswith("http://") and not new_url.lower().startswith("https://"):
+                new_url = "http://" + new_url
+                print(Fore.YELLOW + f"{emojis.INFO} Auto-formatted URL to: {new_url}")
+
             config["PLEX_URL"] = new_url
             save_config(config)
             print(Fore.GREEN + f"{emojis.CHECK} Plex URL saved successfully!\n")
