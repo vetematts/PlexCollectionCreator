@@ -38,7 +38,7 @@ Plex Toolkit is a Python application designed to help manage Plex movie librarie
     ```
 3.  **Install Dependencies**:
     ```bash
-    pip install PlexAPI tmdbv3api colorama requests
+    pip install -r requirements.txt
     ```
 4.  **Run the App**:
     ```bash

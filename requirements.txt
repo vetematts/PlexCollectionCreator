@@ -1,5 +1,5 @@
 plexapi
 tmdbv3api
-python-dotenv
 colorama
-pyfiglet
+requests
+emojis
