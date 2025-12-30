@@ -714,12 +714,9 @@ def run_studio_mode(tmdb, config, pause_fn):
         "studio ghibli": {"company": 10342}, "mcu": {"keyword": 180547},
         "dceu": {"keyword": 229266},
         "neon": {"company": 93920},
-        "dreamworks animation": {"company": 521}, "illumination": {"company": 6704},
-        "cannes palme d'or winners": {"keyword": 239707},
-        "academy award best picture winners": {"keyword": 208364},
-        "focus features": {"company": 10146}, "searchlight pictures": {"company": 43},
-        "blue sky studios": {"company": 9383}, "laika": {"company": 23008},
-        "sony pictures animation": {"company": 2251}, "disney animation": {"company": 2},
+        "dreamworks animation": {"company": 521},
+        "searchlight pictures": {"company": 43},
+        "disney animation": {"company": 2},
         "the criterion collection": {"company": 10994},
     }
     titles = []
