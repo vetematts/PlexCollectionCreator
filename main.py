@@ -308,7 +308,7 @@ def handle_main_menu() -> str:
         Fore.GREEN
         + "1."
         + Fore.RESET
-        + f" {emojis.FRANCHISE}  Franchise / Series (e.g. Star Wars, Harry Potter)\n"
+        + f" {emojis.FRANCHISE} Franchise / Series (e.g. Star Wars, Harry Potter)\n"
     )
     print(
         Fore.GREEN

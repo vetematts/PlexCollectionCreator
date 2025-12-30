@@ -84,7 +84,7 @@ On the first run, the tool will create a `config.json` file. You can configure t
 ## Troubleshooting & Tips 💡
 
 *   **Emojis not showing?**
-    This tool uses emojis for a better UI. If you see squares or weird characters, try using a modern terminal like **Windows Terminal**, **VS Code Integrated Terminal**, or **iTerm2**.
+    This tool uses emojis for a better UI. If you see squares or unusual characters, try using a modern terminal like **Windows Terminal**, **VS Code Integrated Terminal**, or **iTerm2**.
 *   **Plex Connection Failed?**
     *   Ensure your **Plex URL** includes the protocol and port (e.g., `http://192.168.1.5:32400`).
     *   Check that your **Plex Token** is correct and hasn't expired.
