@@ -321,7 +321,7 @@ def handle_main_menu() -> str:
         Fore.YELLOW
         + "4."
         + Fore.RESET
-        + f" {emojis.ART}  Fix Posters & Backgrounds\n"
+        + f" {emojis.ART} Fix Posters & Backgrounds\n"
     )
     print(Fore.YELLOW + "5." + Fore.RESET + f" {emojis.CONFIGURE} Settings & Credentials\n")
     print(Fore.RED + "6." + Fore.RESET + f" {emojis.EXIT} Exit\n")
@@ -781,6 +781,7 @@ def run_studio_mode(tmdb, config, pause_fn):
                 current_params["page"] = 1
 
                 while True:
+                    print(f"Fetching page {current_params['page']}...", end='\r', flush=True)
                     resp = requests.get(url, params=current_params, timeout=10)
                     if resp.status_code == 401:
                         raise ValueError("TMDb authentication failed (invalid API key).")
@@ -804,6 +805,7 @@ def run_studio_mode(tmdb, config, pause_fn):
                         break
                     current_params["page"] += 1
 
+            print(" " * 40, end='\r', flush=True)
             return sorted(list(all_titles))
 
         try:
