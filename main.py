@@ -615,12 +615,12 @@ def run_studio_mode(tmdb, config, pause_fn):
     else: os.system("clear")
     print(PLEX_YELLOW + f"{emojis.STUDIO}  Studio / Keyword Mode")
 
-    print(Fore.GREEN + "1." + Fore.RESET + " Search Plex Library (Best for accuracy, finds what you HAVE)")
-    print(Fore.GREEN + "2." + Fore.RESET + " Discover via TMDb (Standard, misses some distribution titles)")
+    print(Fore.GREEN + "1." + Fore.RESET + " Search Local Plex Library (Uses Plex API to find existing movies)")
+    print(Fore.GREEN + "2." + Fore.RESET + " Discover via TMDb API (Standard search, may miss regional distribution titles)")
     if BS4_AVAILABLE:
-        print(Fore.GREEN + "3." + Fore.RESET + " Scrape Wikipedia (Best for 'A24' & completeness)")
+        print(Fore.GREEN + "3." + Fore.RESET + " Import from Wikipedia Filmography (Best for complete lists like A24)")
     else:
-        print(Fore.LIGHTBLACK_EX + "3. Scrape Wikipedia (Install 'beautifulsoup4' to enable)")
+        print(Fore.LIGHTBLACK_EX + "3. Import from Wikipedia Filmography (Install 'beautifulsoup4' to enable)")
 
     valid_choices = set("123") if BS4_AVAILABLE else set("12")
     mode = read_menu_choice("\nSelect a method (Esc to cancel): ", valid_choices)
