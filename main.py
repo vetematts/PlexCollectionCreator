@@ -588,15 +588,30 @@ def scrape_wikipedia_film_list(url: str) -> list[str]:
         # Attempt to identify columns by header text
         headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
 
-        # Simple heuristic to find Title and Date columns
+        # Identify all potential columns
+        title_indices = []
+        date_indices = []
+
+        for i, h in enumerate(headers):
+            if "title" in h or "film" in h or "winner" in h:
+                title_indices.append(i)
+            if "release" in h or "date" in h or "year" in h:
+                date_indices.append(i)
+
+        # Select best columns
+        # Prefer a title column that isn't also a date column (e.g. avoid "Year of Film")
+        clean_title_indices = [i for i in title_indices if i not in date_indices]
+
         title_idx = -1
         date_idx = -1
 
-        for i, h in enumerate(headers):
-            if "title" in h or "film" in h:
-                if title_idx == -1: title_idx = i
-            if "release" in h or "date" in h or "year" in h:
-                if date_idx == -1: date_idx = i
+        if clean_title_indices:
+            title_idx = clean_title_indices[0]
+        elif title_indices:
+            title_idx = title_indices[0]
+
+        if date_indices:
+            date_idx = date_indices[0]
 
         # If headers aren't clear, skip this table (avoids scraping random data)
         if title_idx == -1 or date_idx == -1:
@@ -619,7 +634,7 @@ def scrape_wikipedia_film_list(url: str) -> list[str]:
 
             if title_text and year_match:
                 # Clean title (remove footnotes like [1])
-                title_clean = re.sub(r"\[.*?\]", "", title_text).strip()
+                title_clean = re.sub(r"\[.*?\]", "", title_text).strip().strip('"“”')
                 titles.append(f"{title_clean} ({year_match.group(0)})")
 
     unique_titles = sorted(list(set(titles)))
@@ -1065,7 +1080,7 @@ def process_and_create_collection(collection_name, items, config, pause_fn, is_p
             return
 
     print(f"\nFound {len(found_movies)} movies in Plex.")
-    if not is_pre_matched and not_found and len(not_found) < len(items):
+    if not is_pre_matched and not_found:
         print(f"Couldn’t find {len(not_found)}:")
         for nf in not_found:
             print(f"- {nf}")
