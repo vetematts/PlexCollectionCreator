@@ -75,11 +75,11 @@ On the first run, the tool will create a `config.json` file. You can configure t
 
 ## Usage 🎮
 
-1.  **Manual Entry**: Type movie names manually.
-2.  **Known Franchise**: Select from a list of major film franchises.
-3.  **Studio / Collections**: Find movies by studio, import from Wikipedia, or discover via TMDb.
-4.  **Settings**: Manage your API keys and connection settings.
-5.  **Tools / Fix Posters & Backgrounds**: Run the tool on a collection or the whole library.
+1.  **Franchise / Series**: Select from a list of major film franchises.
+2.  **Studio / Collections**: Find movies by studio, import from Wikipedia, or discover via TMDb.
+3.  **Manual Entry**: Type movie names manually.
+4.  **Tools / Fix Posters & Backgrounds**: Run the tool on a collection or the whole library.
+5.  **Settings**: Manage your API keys and connection settings.
 
 ## Troubleshooting & Tips 💡
 

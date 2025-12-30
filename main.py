@@ -304,19 +304,19 @@ def check_credentials():
 def handle_main_menu() -> str:
     """Displays the main menu and returns the user's selection."""
     print(PLEX_YELLOW + f"{emojis.CLAPPER} MAIN MENU:\n")
-    print(Fore.GREEN + "1." + Fore.RESET + f" {emojis.MANUAL} Manual Entry\n")
     print(
         Fore.GREEN
-        + "2."
+        + "1."
         + Fore.RESET
         + f" {emojis.FRANCHISE}  Franchise / Series (e.g. Star Wars, Harry Potter)\n"
     )
     print(
         Fore.GREEN
-        + "3."
+        + "2."
         + Fore.RESET
         + f" {emojis.STUDIO}  Studio / Collections (e.g. A24, Pixar)\n"
     )
+    print(Fore.GREEN + "3." + Fore.RESET + f" {emojis.MANUAL} Manual Entry\n")
     print(
         Fore.YELLOW
         + "4."
@@ -1264,13 +1264,13 @@ def run_collection_builder():
         )
 
         if mode == "1":
-            collection_name, titles = run_manual_mode(pause)
-
-        elif mode == "2":
             collection_name, titles = run_franchise_mode(tmdb, pause)
 
-        elif mode == "3":
+        elif mode == "2":
             collection_name, titles, is_pre_matched = run_studio_mode(tmdb, config, pause)
+
+        elif mode == "3":
+            collection_name, titles = run_manual_mode(pause)
 
 
         # If user cancelled or no titles were found, go back to main menu
