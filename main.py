@@ -172,7 +172,8 @@ def handle_credentials_menu():
     """Displays and manages the credentials configuration submenu."""
     while True:
         clear_screen()
-        print(PLEX_YELLOW + f"{emojis.CONFIGURE} CONFIGURE CREDENTIALS")
+        print()
+        print(PLEX_YELLOW + f"{emojis.CONFIGURE} CONFIGURE CREDENTIALS\n")
         print(Fore.YELLOW + "1." + Fore.RESET + f" {emojis.KEY} Set Plex Token\n")
         print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
         print(Fore.BLUE + "3." + Fore.RESET + f" {emojis.CLAPPER} Set TMDb API Key\n")

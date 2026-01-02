@@ -16,6 +16,7 @@ from toolkit.utils import (
 def run_manual_mode(pause_fn):
     """Handles the manual movie entry mode."""
     clear_screen()
+    print()
     print(Fore.YELLOW + f"{emojis.MANUAL} Manual Entry\n")
     collection_name = read_line(
         Fore.LIGHTBLACK_EX
@@ -44,6 +45,7 @@ def run_manual_mode(pause_fn):
 def run_franchise_mode(tmdb, pause_fn):
     """Handles the franchise/series mode."""
     clear_screen()
+    print()
     print(Fore.YELLOW + f"{emojis.FRANCHISE}  Franchise / Series Mode")
     titles = []
 
@@ -98,7 +100,8 @@ def run_franchise_mode(tmdb, pause_fn):
 def run_studio_mode(tmdb, config, pause_fn):
     """Handles the studio/keyword mode."""
     clear_screen()
-    print(Fore.YELLOW + f"{emojis.STUDIO}  Studio / Collection Mode")
+    print()
+    print(Fore.YELLOW + f"{emojis.STUDIO}  Studio / Collection Mode\n")
     print(Fore.GREEN + "1." + Fore.RESET + " Search Local Plex Library")
     print(Fore.GREEN + "2." + Fore.RESET + " Discover via TMDb API")
 
@@ -228,7 +231,8 @@ def run_studio_mode(tmdb, config, pause_fn):
 def run_poster_tool(config, pause_fn):
     """Sub-menu for fixing posters."""
     clear_screen()
-    print(Fore.YELLOW + f"{emojis.ART}  Fix Posters & Backgrounds")
+    print()
+    print(Fore.YELLOW + f"{emojis.ART}  Fix Posters & Backgrounds\n")
     print(Fore.YELLOW + "1." + Fore.RESET + " Fix Posters for a specific Collection")
     print(
         Fore.YELLOW + "2." + Fore.RESET + " Fix Posters for the ENTIRE Library (Slow)"
