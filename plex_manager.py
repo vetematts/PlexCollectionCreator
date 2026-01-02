@@ -1,7 +1,7 @@
 from plexapi.server import PlexServer
 from plexapi.exceptions import NotFound, Unauthorized
 import requests
-import emojis
+from toolkit import emojis
 
 
 class PlexManager:

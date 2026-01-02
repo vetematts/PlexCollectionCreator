@@ -85,7 +85,7 @@ def read_menu_choice(prompt, valid_choices):
 
 
 def get_config_path():
-    return os.path.join(os.path.dirname(__file__), "config.json")
+    return os.path.join(os.path.dirname(__file__), "..", "config.json")
 
 
 def load_config():
@@ -182,7 +182,7 @@ def read_index_or_skip(max_index, prompt):
 
 def load_fallback_data(section):
     # Load fallback data for a given section from fallback_collections.json.
-    fallback_path = os.path.join(os.path.dirname(__file__), "fallback_collections.json")
+    fallback_path = os.path.join(os.path.dirname(__file__), "..", "data", "fallback_collections.json")
     with open(fallback_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data.get(section, {})

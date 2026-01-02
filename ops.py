@@ -1,8 +1,8 @@
 import difflib
 from colorama import Fore
-import emojis
-from plex_manager import PlexManager
-from utils import (
+from toolkit import emojis
+from toolkit.services.plex_manager import PlexManager
+from toolkit.utils import (
     extract_title_and_year,
     normalize_title,
     read_index_or_skip,

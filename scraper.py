@@ -1,7 +1,7 @@
 import requests
 import re
 from colorama import Fore
-import emojis
+from toolkit import emojis
 
 try:
     from bs4 import BeautifulSoup

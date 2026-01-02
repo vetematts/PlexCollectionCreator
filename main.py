@@ -9,13 +9,13 @@ import json
 from datetime import datetime, timezone
 
 from colorama import init, Fore
-import emojis
-from plex_manager import PlexManager
-from tmdb_search import TMDbSearch
-from styling import print_plex_logo_ascii, PLEX_YELLOW
-import features
-import ops
-from utils import (
+from toolkit import emojis
+from toolkit.services.plex_manager import PlexManager
+from toolkit.services.tmdb_search import TMDbSearch
+from toolkit.styling import print_plex_logo_ascii, PLEX_YELLOW
+from toolkit import features
+from toolkit import ops
+from toolkit.utils import (
     read_line,
     read_menu_choice,
     load_config,

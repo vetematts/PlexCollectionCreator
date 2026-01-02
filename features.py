@@ -1,9 +1,9 @@
 from colorama import Fore
-import emojis
-import constants
-import scraper
-from plex_manager import PlexManager
-from utils import (
+from toolkit import emojis
+from toolkit import constants
+from toolkit.services import scraper
+from toolkit.services.plex_manager import PlexManager
+from toolkit.utils import (
     read_line,
     read_menu_choice,
     print_grid,
