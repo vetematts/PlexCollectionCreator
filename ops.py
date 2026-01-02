@@ -74,13 +74,8 @@ def pick_plex_match(raw_title: str, results):
     if idx is None: return None
     return good_matches[idx - 1]
 
-def process_and_create_collection(collection_name, items, config, pause_fn, is_pre_matched=False, mock_mode=False):
+def process_and_create_collection(collection_name, items, config, pause_fn, is_pre_matched=False):
     """Connects to Plex, finds movies, and creates the collection."""
-    if mock_mode:
-        print("\n[MOCK MODE ENABLED] (Simulated)")
-        pause_fn()
-        return
-
     plex_token = config.get("PLEX_TOKEN")
     plex_url = config.get("PLEX_URL")
     if not plex_token or not plex_url:

@@ -98,7 +98,6 @@ config = load_config()
 PLEX_TOKEN = config.get("PLEX_TOKEN")
 PLEX_URL = config.get("PLEX_URL")
 TMDB_API_KEY = config.get("TMDB_API_KEY")
-MOCK_MODE = False  # Set to True to simulate Plex actions without making changes
 
 
 def clear_screen():
@@ -352,7 +351,7 @@ def run_collection_builder():
             continue
 
 
-        ops.process_and_create_collection(collection_name, titles, config, pause, is_pre_matched=is_pre_matched, mock_mode=MOCK_MODE)
+        ops.process_and_create_collection(collection_name, titles, config, pause, is_pre_matched=is_pre_matched)
 
 
 if __name__ == "__main__":
