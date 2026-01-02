@@ -10,7 +10,8 @@ class UserAbort(Exception):
 def is_escape(value):
     if not value:
         return False
-    return value.strip().lower() == 'esc'
+    val = value.strip().lower()
+    return val == 'esc' or val == 'escape' or val == '\x1b'
 
 def read_line(prompt, allow_escape=True):
     try:
@@ -24,7 +25,11 @@ def read_line(prompt, allow_escape=True):
 
 def read_menu_choice(prompt, valid_choices):
     while True:
-        choice = input(prompt).strip()
+        try:
+            choice = input(prompt).strip()
+        except KeyboardInterrupt:
+            print()
+            return "ESC"
         if is_escape(choice):
             return "ESC"
         if choice in valid_choices:
@@ -75,7 +80,11 @@ def pick_from_list_case_insensitive(prompt, options):
     # options is a list of strings
     # returns the matching string from options, or None if cancelled
     while True:
-        user_input = input(prompt).strip()
+        try:
+            user_input = input(prompt).strip()
+        except KeyboardInterrupt:
+            print()
+            return None
         if is_escape(user_input):
             return None
 
@@ -101,7 +110,11 @@ def normalize_title(title):
 def read_index_or_skip(max_index, prompt):
     # Returns integer index (1-based) or None if skipped/cancelled
     while True:
-        val = input(prompt).strip()
+        try:
+            val = input(prompt).strip()
+        except KeyboardInterrupt:
+            print()
+            return None
         if is_escape(val) or val.lower() == 's':
             return None
 

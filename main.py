@@ -722,12 +722,8 @@ def process_and_create_collection(collection_name, items, config, pause_fn, is_p
         for raw, mv in matched_pairs:
             print(f"- {raw} -> {format_plex_item(mv)}")
 
-    confirm = (
-        input("Proceed to create collection with these movies? (y/n): ")
-        .strip()
-        .lower()
-    )
-    if confirm != "y":
+    confirm = read_line("Proceed to create collection with these movies? (y/n): ")
+    if not confirm or confirm.strip().lower() != "y":
         print("Aborted by user.")
         pause_fn()
         return
