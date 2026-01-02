@@ -4,3 +4,6 @@ colorama
 requests
 emojis
 beautifulsoup4
+pytest
+black
+ruff
