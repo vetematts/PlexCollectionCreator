@@ -6,6 +6,11 @@ This script uses:
 
 import os
 import json
+import sys
+
+# Explicitly add the current directory to sys.path to ensure 'toolkit' is found
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from datetime import datetime, timezone
 
 from colorama import init, Fore
