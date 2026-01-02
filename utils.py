@@ -15,14 +15,32 @@ def is_escape(value):
     return val == 'esc' or val == 'escape' or val == '\x1b'
 
 def read_line(prompt, allow_escape=True):
-    try:
-        user_input = input(prompt)
-        if allow_escape and is_escape(user_input):
+    print(prompt, end='', flush=True)
+    buffer = []
+    while True:
+        key = get_single_keypress()
+
+        # Handle ESC (ASCII 27) or Ctrl+C (ASCII 3)
+        if key == '\x03' or (allow_escape and key == '\x1b'):
+            print()
             return None
-        return user_input
-    except KeyboardInterrupt:
-        print()
-        return None
+
+        # Handle Enter
+        if key in ('\r', '\n'):
+            print()
+            return "".join(buffer)
+
+        # Handle Backspace (ASCII 8 or 127)
+        if key in ('\x08', '\x7f'):
+            if buffer:
+                buffer.pop()
+                print('\b \b', end='', flush=True)
+            continue
+
+        # Handle regular characters
+        if len(key) == 1 and key.isprintable():
+            buffer.append(key)
+            print(key, end='', flush=True)
 
 def get_single_keypress():
     """Waits for a single keypress and returns it (Cross-platform)."""
@@ -101,13 +119,10 @@ def pick_from_list_case_insensitive(prompt, options):
     # options is a list of strings
     # returns the matching string from options, or None if cancelled
     while True:
-        try:
-            user_input = input(prompt).strip()
-        except KeyboardInterrupt:
-            print()
+        user_input = read_line(prompt)
+        if user_input is None:
             return None
-        if is_escape(user_input):
-            return None
+        user_input = user_input.strip()
 
         # Exact match check
         for opt in options:
@@ -131,11 +146,10 @@ def normalize_title(title):
 def read_index_or_skip(max_index, prompt):
     # Returns integer index (1-based) or None if skipped/cancelled
     while True:
-        try:
-            val = input(prompt).strip()
-        except KeyboardInterrupt:
-            print()
+        val = read_line(prompt)
+        if val is None:
             return None
+        val = val.strip()
         if is_escape(val) or val.lower() == 's':
             return None
 
