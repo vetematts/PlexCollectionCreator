@@ -246,7 +246,7 @@ def handle_credentials_menu():
                 try:
                     pm = PlexManager(plex_token, plex_url)
                     libs = pm.get_all_libraries()
-                    available_libs = [l.title for l in libs]
+                    available_libs = [lib.title for lib in libs]
                 except Exception:
                     pass
 

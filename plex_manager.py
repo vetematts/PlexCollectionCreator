@@ -55,7 +55,8 @@ class PlexManager:
         field_map = {'poster': 'thumb', 'background': 'art'}
         field = field_map.get(image_type)
 
-        if not field: return
+        if not field:
+            return
 
         try:
             if item.isLocked(field) and not include_locked:
