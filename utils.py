@@ -159,3 +159,10 @@ def read_index_or_skip(max_index, prompt):
                 return idx
 
         print(Fore.RED + "Invalid number." + Fore.RESET)
+
+def load_fallback_data(section):
+    # Load fallback data for a given section from fallback_collections.json.
+    fallback_path = os.path.join(os.path.dirname(__file__), "fallback_collections.json")
+    with open(fallback_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get(section, {})
