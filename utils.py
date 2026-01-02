@@ -147,17 +147,19 @@ def pick_from_list_case_insensitive(prompt, options):
 
 def extract_title_and_year(text):
     # Returns (title, year_int_or_None)
+    text = text.strip()
     match = re.search(r"^(.*?)\s*\((\d{4})\)$", text)
     if match:
         return match.group(1).strip(), int(match.group(2))
-    return text.strip(), None
+    return text, None
 
 
 def normalize_title(title):
     # Remove punctuation and lowercase
     if not title:
         return ""
-    return re.sub(r"[^\w\s]", "", title).lower().strip()
+    cleaned = re.sub(r"[^\w\s]", "", title).lower()
+    return " ".join(cleaned.split())
 
 
 def read_index_or_skip(max_index, prompt):
