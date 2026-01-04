@@ -5,6 +5,8 @@ import concurrent.futures
 import re
 import emojis
 
+# Pre-compile regex for efficiency
+YEAR_PATTERN = re.compile(r"^(.*?) \((\d{4})\)$")
 
 class PlexManager:
     def __init__(self, token, base_url):
@@ -42,12 +44,16 @@ class PlexManager:
             # Parse "Title (Year)" format for accurate matching
             year = None
             clean_title = title_query
-            match = re.match(r"^(.*?) \((\d{4})\)$", title_query)
+            match = YEAR_PATTERN.match(title_query)
             if match:
                 clean_title = match.group(1)
                 year = int(match.group(2))
 
-            results = library.search(clean_title)
+            try:
+                results = library.search(clean_title)
+            except Exception as e:
+                print(f"{emojis.CROSS} Error searching for '{clean_title}': {e}")
+                return None
 
             if results:
                 # If we have a year, filter results with a +/- 1 year tolerance
@@ -68,9 +74,22 @@ class PlexManager:
         return matched
 
     def add_to_collection(self, items, collection_name):
-        for title, media in items:
-            media.addCollection(collection_name)
-            print(f"{emojis.CHECK} Added '{title}' to collection: {collection_name}")
+        if not items:
+            return
+
+        # Extract just the media objects from the list of tuples
+        media_items = [media for _, media in items]
+
+        # Check if collection exists
+        collections = self.plex.library.search(title=collection_name, libtype='collection')
+
+        if collections:
+            collections[0].addItems(media_items)
+            print(f"{emojis.CHECK} Added {len(media_items)} items to existing collection: '{collection_name}'")
+        else:
+            # Create new collection with all items at once
+            media_items[0].section().createCollection(title=collection_name, items=media_items)
+            print(f"{emojis.CHECK} Created collection '{collection_name}' with {len(media_items)} items.")
 
     def _set_tmdb_image(self, item, image_type, include_locked=False):
         """
