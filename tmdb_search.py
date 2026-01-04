@@ -1,6 +1,7 @@
 from tmdbv3api import TMDb, Search, Collection
 from functools import lru_cache
 
+
 class TMDbSearch:
     def __init__(self, api_key):
         self.tmdb = TMDb()
