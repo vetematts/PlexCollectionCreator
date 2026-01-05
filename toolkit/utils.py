@@ -3,6 +3,7 @@ import os
 import re
 import sys
 from colorama import Fore
+from toolkit.input_handler import InputHandler
 
 
 class UserAbort(Exception):
@@ -51,45 +52,21 @@ def get_single_keypress():
 
 
 def read_line(prompt, allow_escape=True):
-    print(prompt, end="", flush=True)
-    buffer = []
     while True:
-        key = get_single_keypress()
+        # Use the robust InputHandler which supports arrow keys
+        result = InputHandler.read_line(prompt)
 
-        # Handle ESC (ASCII 27) or Ctrl+C (ASCII 3)
-        if key == "\x03" or (allow_escape and key == "\x1b"):
-            print()
-            return None
-
-        # Handle Enter
-        if key in ("\r", "\n"):
-            print()
-            return "".join(buffer)
-
-        # Handle Backspace (ASCII 8 or 127)
-        if key in ("\x08", "\x7f"):
-            if buffer:
-                buffer.pop()
-                print("\b \b", end="", flush=True)
+        if result is None:
+            if allow_escape:
+                return None
+            # If escape is not allowed, loop again (InputHandler prints a newline on Esc)
             continue
 
-        # Handle regular characters
-        if len(key) == 1 and key.isprintable():
-            buffer.append(key)
-            print(key, end="", flush=True)
+        return result
 
 
 def read_menu_choice(prompt, valid_choices):
-    print(prompt, end="", flush=True)
-    while True:
-        key = get_single_keypress()
-        # Handle ESC (ASCII 27) or Ctrl+C (ASCII 3)
-        if key == "\x1b" or key == "\x03":
-            print()
-            return "ESC"
-        if key in valid_choices:
-            print(key)
-            return key
+    return InputHandler.read_menu_choice(prompt, valid_choices)
 
 
 def get_config_path():

@@ -21,14 +21,17 @@ from toolkit.styling import print_plex_logo_ascii, PLEX_YELLOW
 from toolkit import features
 from toolkit import ops
 from toolkit.utils import (
-    read_line,
-    read_menu_choice,
     load_config,
     save_config,
     print_grid,
     pick_from_list_case_insensitive,
     clear_screen,
 )
+from toolkit.input_handler import InputHandler
+
+# Use the robust input handler that supports Arrow keys and Esc
+read_line = InputHandler.read_line
+read_menu_choice = InputHandler.read_menu_choice
 
 
 def _now_iso():
@@ -101,9 +104,19 @@ def test_tmdb_connection(cfg):
 init(autoreset=True)
 
 config = load_config()
-PLEX_TOKEN = config.get("PLEX_TOKEN")
-PLEX_URL = config.get("PLEX_URL")
-TMDB_API_KEY = config.get("TMDB_API_KEY")
+
+# Allow Environment Variables to override config file (useful for Docker/CI)
+PLEX_TOKEN = os.getenv("PLEX_TOKEN", config.get("PLEX_TOKEN"))
+PLEX_URL = os.getenv("PLEX_URL", config.get("PLEX_URL"))
+TMDB_API_KEY = os.getenv("TMDB_API_KEY", config.get("TMDB_API_KEY"))
+
+# Update config object so the rest of the app uses the active credentials
+if PLEX_TOKEN:
+    config["PLEX_TOKEN"] = PLEX_TOKEN
+if PLEX_URL:
+    config["PLEX_URL"] = PLEX_URL
+if TMDB_API_KEY:
+    config["TMDB_API_KEY"] = TMDB_API_KEY
 
 
 def welcome():
@@ -197,6 +210,13 @@ def handle_credentials_menu():
             break
         if choice == "1":
             clear_screen()
+            print(Fore.YELLOW + "1." + Fore.RESET + f" {emojis.KEY} Set Plex Token\n")
+            print(
+                Fore.LIGHTBLACK_EX
+                + "To find your token, view the XML of any item on Plex Web:"
+                + Fore.RESET
+            )
+            print(Fore.BLUE + "https://app.plex.tv" + Fore.RESET + "\n")
             new_token = read_line("Enter new Plex Token (Esc to cancel): ")
             if new_token is None:
                 continue
@@ -215,6 +235,18 @@ def handle_credentials_menu():
             pause()
         elif choice == "2":
             clear_screen()
+            print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
+            print(
+                Fore.LIGHTBLACK_EX
+                + "You can find your Plex URL under Settings > Remote Access here:"
+                + Fore.RESET
+            )
+            print(
+                Fore.BLUE
+                + "https://app.plex.tv/desktop/#!/settings/server"
+                + Fore.RESET
+                + "\n"
+            )
             new_url = read_line("Enter new Plex URL (Esc to cancel): ")
             if new_url is None:
                 continue
@@ -242,6 +274,20 @@ def handle_credentials_menu():
             pause()
         elif choice == "3":
             clear_screen()
+            print(
+                Fore.BLUE + "3." + Fore.RESET + f" {emojis.CLAPPER} Set TMDb API Key\n"
+            )
+            print(
+                Fore.LIGHTBLACK_EX
+                + "You can generate an API Key in your account settings:"
+                + Fore.RESET
+            )
+            print(
+                Fore.BLUE
+                + "https://www.themoviedb.org/settings/api"
+                + Fore.RESET
+                + "\n"
+            )
             new_key = read_line("Enter new TMDb API Key (Esc to cancel): ")
             if new_key is None:
                 continue
@@ -252,6 +298,18 @@ def handle_credentials_menu():
             pause()
         elif choice == "4":
             clear_screen()
+            print(
+                Fore.CYAN
+                + "4."
+                + Fore.RESET
+                + f" {emojis.MOVIE} Set Plex Library Name\n"
+            )
+            print(
+                Fore.LIGHTBLACK_EX
+                + "Select the library containing your movies."
+                + Fore.RESET
+                + "\n"
+            )
 
             # Try to fetch libraries from Plex to allow selection
             plex_token = config.get("PLEX_TOKEN")

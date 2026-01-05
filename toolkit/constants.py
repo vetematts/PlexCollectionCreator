@@ -50,4 +50,6 @@ STUDIO_MAP = {
     "searchlight pictures": {"company": 43},
     "disney animation": {"company": 2},
     "the criterion collection": {"company": 10994},
+    "netflix": {"company": 20580},
+    "HBO": {"company": 3268},
 }

@@ -7,6 +7,7 @@ from toolkit.utils import (
     normalize_title,
     read_index_or_skip,
     read_line,
+    read_menu_choice,
     UserAbort,
 )
 
@@ -154,11 +155,69 @@ def process_and_create_collection(
         pause_fn()
         return
 
-    confirm = read_line("Proceed to create collection with these movies? (y/n): ")
-    if not confirm or confirm.strip().lower() != "y":
-        print("Aborted.")
-        pause_fn()
-        return
+    # Check if collection exists to prevent duplicates
+    existing_collections = library.search(title=collection_name, libtype="collection")
+    existing_collection = next(
+        (c for c in existing_collections if c.title.lower() == collection_name.lower()),
+        None,
+    )
+
+    if existing_collection:
+        print(
+            Fore.YELLOW
+            + f"\n{emojis.INFO} Collection '{existing_collection.title}' already exists."
+            + Fore.RESET
+        )
+        choice = read_menu_choice(
+            "Do you want to (A)ppend, (O)verwrite, or (C)ancel? ", set("aAoOcC")
+        )
+        if choice in ("c", "C", "ESC"):
+            print("Canceled.")
+            pause_fn()
+            return
+        if choice in ("a", "A"):
+            current_items = existing_collection.items()
+            current_keys = {str(x.ratingKey) for x in current_items}
+
+            to_add = []
+            skipped = 0
+            for movie in found_movies:
+                if str(movie.ratingKey) not in current_keys:
+                    to_add.append(movie)
+                else:
+                    skipped += 1
+
+            if to_add:
+                existing_collection.addItems(to_add)
+                print(
+                    f"\n{emojis.CHECK} Added {len(to_add)} new movies to '{existing_collection.title}'."
+                )
+            else:
+                print(
+                    f"\n{emojis.CHECK} No new movies to add. All items were already in '{existing_collection.title}'."
+                )
+
+            if skipped > 0:
+                print(
+                    Fore.LIGHTBLACK_EX
+                    + f"{skipped} movies were already in the collection."
+                    + Fore.RESET
+                )
+            pause_fn()
+            return
+        if choice in ("o", "O"):
+            print(
+                Fore.YELLOW
+                + f"\n{emojis.INFO} Deleting existing collection '{existing_collection.title}'..."
+                + Fore.RESET
+            )
+            existing_collection.delete()
+    else:
+        confirm = read_line("Proceed to create collection with these movies? (y/n): ")
+        if not confirm or confirm.strip().lower() != "y":
+            print(Fore.RED + f"\n{emojis.CROSS} Aborted.")
+            pause_fn()
+            return
 
     try:
         library.createCollection(collection_name, items=found_movies)
