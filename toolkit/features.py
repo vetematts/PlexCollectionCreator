@@ -103,6 +103,12 @@ def run_studio_mode(tmdb, config, pause_fn):
     clear_screen()
     print()
     print(Fore.YELLOW + f"{emojis.STUDIO}  Studio / Collection Mode\n")
+    print(
+        Fore.LIGHTBLACK_EX
+        + "Create collections by Studio (e.g. A24), Network (e.g. HBO), or Keyword."
+        + Fore.RESET
+        + "\n"
+    )
     print(Fore.GREEN + "1." + Fore.RESET + " Discover via TMDb API")
 
     bs4_avail = scraper.BeautifulSoup is not None
