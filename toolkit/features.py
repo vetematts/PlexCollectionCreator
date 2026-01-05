@@ -233,6 +233,13 @@ def run_poster_tool(config, pause_fn):
     clear_screen()
     print()
     print(Fore.YELLOW + f"{emojis.ART}  Fix Posters & Backgrounds\n")
+    print(
+        Fore.LIGHTBLACK_EX
+        + "This tool scans your library and applies the official TMDb artwork.\n"
+        + "Items with locked (custom) posters or backgrounds will be skipped."
+        + Fore.RESET
+        + "\n"
+    )
     print(Fore.YELLOW + "1." + Fore.RESET + " Fix Posters for a specific Collection")
     print(
         Fore.YELLOW + "2." + Fore.RESET + " Fix Posters for the ENTIRE Library (Slow)"
