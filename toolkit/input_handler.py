@@ -16,13 +16,14 @@ class InputHandler:
         """Reads a single character or escape sequence from stdin."""
         if not tty:
             # Windows fallback
-            if os.name == 'nt':
+            if os.name == "nt":
                 import msvcrt
+
                 ch = msvcrt.getch()
                 # Handle special keys (0x00 or 0xe0 followed by code)
-                if ch in (b'\x00', b'\xe0'):
+                if ch in (b"\x00", b"\xe0"):
                     ch = ch + msvcrt.getch()
-                return ch.decode('utf-8', errors='ignore')
+                return ch.decode("utf-8", errors="ignore")
             return sys.stdin.read(1)
 
         fd = sys.stdin.fileno()
