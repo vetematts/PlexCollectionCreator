@@ -51,5 +51,5 @@ STUDIO_MAP = {
     "disney animation": {"company": 2},
     "the criterion collection": {"company": 10994},
     "netflix": {"company": 20580},
-    "hbo": {"company": 3268},
+    "HBO": {"company": 3268},
 }

@@ -144,6 +144,12 @@ def run_studio_mode(tmdb, config, pause_fn):
     if mode == "1":
         clear_screen()
         print(Fore.GREEN + "1." + Fore.RESET + f" {emojis.URL} Discover via TMDb API\n")
+        print(
+            Fore.LIGHTBLACK_EX
+            + "Best for official Studios (Ghibli), Networks (HBO), and Universes (MCU)."
+            + Fore.RESET
+            + "\n"
+        )
         titles = []
         if not tmdb:
             print(
