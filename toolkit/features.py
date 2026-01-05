@@ -105,7 +105,7 @@ def run_studio_mode(tmdb, config, pause_fn):
     print(Fore.YELLOW + f"{emojis.STUDIO}  Studio / Collection Mode\n")
     print(
         Fore.LIGHTBLACK_EX
-        + "Create collections by Studio (e.g. A24), Network (e.g. HBO), or Keyword."
+        + "Create collections by Studio (e.g. A24, Pixar), Network (e.g. HBO, Netflix), or Universe (e.g. MCU, DCEU)."
         + Fore.RESET
         + "\n"
     )
