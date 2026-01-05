@@ -128,7 +128,10 @@ def run_studio_mode(tmdb, config, pause_fn):
         Fore.GREEN + "3." + Fore.RESET + f" {emojis.MOVIE} Search Local Plex Library\n"
     )
     print(
-        Fore.GREEN + "4." + Fore.RESET + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n"
+        Fore.GREEN
+        + "4."
+        + Fore.RESET
+        + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n"
     )
 
     mode = read_menu_choice(
@@ -287,7 +290,12 @@ def run_studio_mode(tmdb, config, pause_fn):
     # Option 4: Fallback / Offline
     if mode == "4":
         clear_screen()
-        print(Fore.GREEN + "4." + Fore.RESET + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n")
+        print(
+            Fore.GREEN
+            + "4."
+            + Fore.RESET
+            + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n"
+        )
         studios_data = load_fallback_data("Studios")
         choice = pick_from_list_case_insensitive(
             "\n" + Fore.LIGHTBLACK_EX + "Select a studio (Esc to cancel): ",
