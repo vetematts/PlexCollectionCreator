@@ -127,9 +127,12 @@ def run_studio_mode(tmdb, config, pause_fn):
     print(
         Fore.GREEN + "3." + Fore.RESET + f" {emojis.MOVIE} Search Local Plex Library\n"
     )
+    print(
+        Fore.GREEN + "4." + Fore.RESET + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n"
+    )
 
     mode = read_menu_choice(
-        "Select a method (Esc to cancel): ", set("123") if bs4_avail else set("13")
+        "Select a method (Esc to cancel): ", set("1234") if bs4_avail else set("134")
     )
     if mode == "ESC" or mode is None:
         return None, None, False
@@ -280,6 +283,26 @@ def run_studio_mode(tmdb, config, pause_fn):
             print(Fore.RED + f"Error searching Plex: {e}")
             pause_fn()
             return None, None, False
+
+    # Option 4: Fallback / Offline
+    if mode == "4":
+        clear_screen()
+        print(Fore.GREEN + "4." + Fore.RESET + f" {emojis.FRANCHISE} Use Built-in Lists (Offline)\n")
+        studios_data = load_fallback_data("Studios")
+        choice = pick_from_list_case_insensitive(
+            "\n" + Fore.LIGHTBLACK_EX + "Select a studio (Esc to cancel): ",
+            studios_data.keys(),
+        )
+        if choice is None:
+            return None, None, False
+        titles = studios_data.get(choice, [])
+
+        collection_name = read_line(
+            f"Enter a name for your new collection (Default: {choice}): "
+        )
+        if not collection_name or not collection_name.strip():
+            collection_name = choice
+        return collection_name.strip(), titles, False
 
 
 def run_poster_tool(config, pause_fn):
