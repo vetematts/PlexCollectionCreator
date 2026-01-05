@@ -21,14 +21,17 @@ from toolkit.styling import print_plex_logo_ascii, PLEX_YELLOW
 from toolkit import features
 from toolkit import ops
 from toolkit.utils import (
-    read_line,
-    read_menu_choice,
     load_config,
     save_config,
     print_grid,
     pick_from_list_case_insensitive,
     clear_screen,
 )
+from toolkit.input_handler import InputHandler
+
+# Use the robust input handler that supports Arrow keys and Esc
+read_line = InputHandler.read_line
+read_menu_choice = InputHandler.read_menu_choice
 
 
 def _now_iso():
