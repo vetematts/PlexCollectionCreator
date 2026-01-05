@@ -210,6 +210,13 @@ def handle_credentials_menu():
             break
         if choice == "1":
             clear_screen()
+            print(Fore.YELLOW + "1." + Fore.RESET + f" {emojis.KEY} Set Plex Token\n")
+            print(
+                Fore.LIGHTBLACK_EX
+                + "To find your token, view the XML of any item on Plex Web:"
+                + Fore.RESET
+            )
+            print(Fore.BLUE + "https://app.plex.tv" + Fore.RESET + "\n")
             new_token = read_line("Enter new Plex Token (Esc to cancel): ")
             if new_token is None:
                 continue
