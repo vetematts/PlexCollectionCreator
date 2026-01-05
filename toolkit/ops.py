@@ -206,12 +206,16 @@ def process_and_create_collection(
             pause_fn()
             return
         if choice in ("o", "O"):
-            print(f"Deleting existing collection '{existing_collection.title}'...")
+            print(
+                Fore.YELLOW
+                + f"\n{emojis.INFO} Deleting existing collection '{existing_collection.title}'..."
+                + Fore.RESET
+            )
             existing_collection.delete()
     else:
         confirm = read_line("Proceed to create collection with these movies? (y/n): ")
         if not confirm or confirm.strip().lower() != "y":
-            print("Aborted.")
+            print(Fore.RED + f"\n{emojis.CROSS} Aborted.")
             pause_fn()
             return
 
