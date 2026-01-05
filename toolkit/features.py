@@ -109,17 +109,17 @@ def run_studio_mode(tmdb, config, pause_fn):
         + Fore.RESET
         + "\n"
     )
-    print(Fore.GREEN + "1." + Fore.RESET + " Discover via TMDb API\n")
+    print(Fore.GREEN + "1." + Fore.RESET + f" {emojis.URL} Discover via TMDb API\n")
 
     bs4_avail = scraper.BeautifulSoup is not None
     if bs4_avail:
-        print(Fore.GREEN + "2." + Fore.RESET + " Import from Web List (Wikipedia)\n")
+        print(Fore.GREEN + "2." + Fore.RESET + f" {emojis.BOOK} Import from Web List (Wikipedia)\n")
     else:
         print(
             Fore.LIGHTBLACK_EX
-            + "2. Import from Web List (Install 'beautifulsoup4' to enable)\n"
+            + f"2. {emojis.BOOK} Import from Web List (Install 'beautifulsoup4' to enable)\n"
         )
-    print(Fore.GREEN + "3." + Fore.RESET + " Search Local Plex Library\n")
+    print(Fore.GREEN + "3." + Fore.RESET + f" {emojis.MOVIE} Search Local Plex Library\n")
 
     mode = read_menu_choice(
         "Select a method (Esc to cancel): ", set("123") if bs4_avail else set("13")
@@ -168,9 +168,7 @@ def run_studio_mode(tmdb, config, pause_fn):
                     keyword_id=studio_info.get("keyword"),
                 )
             except Exception as e:
-                print(
-                    Fore.RED + f"{emojis.CROSS} Error retrieving movies from TMDb: {e}"
-                )
+                print(Fore.RED + f"{emojis.CROSS} Error retrieving movies from TMDb: {e}")
                 pause_fn()
                 return None, None, False
 
