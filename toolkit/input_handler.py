@@ -1,6 +1,7 @@
 import sys
 import select
 import os
+import contextlib
 
 try:
     import tty
@@ -12,8 +13,24 @@ except ImportError:
 
 class InputHandler:
     @staticmethod
-    def _get_char():
-        """Reads a single character or escape sequence from stdin."""
+    @contextlib.contextmanager
+    def _terminal_mode():
+        """Context manager to set terminal to cbreak mode and restore it."""
+        if not tty or not sys.stdin.isatty():
+            yield
+            return
+
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setcbreak(fd)
+            yield
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+    @staticmethod
+    def _read_char_raw():
+        """Reads a single char/sequence assuming raw/cbreak mode is active."""
         if not tty:
             # Windows fallback
             if os.name == "nt":
@@ -27,50 +44,40 @@ class InputHandler:
             return sys.stdin.read(1)
 
         fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
         try:
-            # Use setcbreak instead of setraw. This disables line buffering (so we get chars immediately)
-            # but keeps signal handling (Ctrl+C) and output processing (newlines work normally).
-            tty.setcbreak(fd)
+            b = os.read(fd, 1)
+        except KeyboardInterrupt:
+            return "\x03"
 
-            # Use os.read to bypass Python's buffering, which causes select() to fail
-            # when data is already buffered in Python but not in the OS pipe.
-            try:
-                b = os.read(fd, 1)
-            except KeyboardInterrupt:
-                return "\x03"  # Return Ctrl+C character
+        if not b:
+            return ""
 
-            if not b:
-                return ""
-
-            if b == b"\x1b":
-                # Check for escape sequence (Arrow keys, etc.)
+        if b == b"\x1b":
+            # Check for escape sequence
+            if select.select([fd], [], [], 0.05)[0]:
+                b += os.read(fd, 1)
                 if select.select([fd], [], [], 0.05)[0]:
                     b += os.read(fd, 1)
-                    if select.select([fd], [], [], 0.05)[0]:
-                        b += os.read(fd, 1)
-                return b.decode("utf-8", errors="ignore")
-
-            # Handle UTF-8 multi-byte characters
-            first = ord(b)
-            to_read = 0
-            if (first & 0xE0) == 0xC0:
-                to_read = 1
-            elif (first & 0xF0) == 0xE0:
-                to_read = 2
-            elif (first & 0xF8) == 0xF0:
-                to_read = 3
-
-            while to_read > 0:
-                if select.select([fd], [], [], 0.05)[0]:
-                    b += os.read(fd, 1)
-                    to_read -= 1
-                else:
-                    break
-
             return b.decode("utf-8", errors="ignore")
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+        # Handle UTF-8 multi-byte characters
+        first = ord(b)
+        to_read = 0
+        if (first & 0xE0) == 0xC0:
+            to_read = 1
+        elif (first & 0xF0) == 0xE0:
+            to_read = 2
+        elif (first & 0xF8) == 0xF0:
+            to_read = 3
+
+        while to_read > 0:
+            if select.select([fd], [], [], 0.05)[0]:
+                b += os.read(fd, 1)
+                to_read -= 1
+            else:
+                break
+
+        return b.decode("utf-8", errors="ignore")
 
     @staticmethod
     def read_line(prompt=""):
@@ -90,8 +97,9 @@ class InputHandler:
         buffer = []
         cursor_pos = 0
 
-        while True:
-            key = InputHandler._get_char()
+        with InputHandler._terminal_mode():
+            while True:
+                key = InputHandler._read_char_raw()
 
             # Handle Ctrl+C
             if key == "\x03":
@@ -197,11 +205,12 @@ class InputHandler:
     def read_menu_choice(prompt, valid_choices):
         sys.stdout.write(prompt)
         sys.stdout.flush()
-        while True:
-            key = InputHandler._get_char()
-            if key == "\x1b" or key == "\x03":
-                sys.stdout.write("\n")
-                return "ESC"
-            if key in valid_choices:
-                sys.stdout.write(key + "\n")
-                return key
+        with InputHandler._terminal_mode():
+            while True:
+                key = InputHandler._read_char_raw()
+                if key == "\x1b" or key == "\x03":
+                    sys.stdout.write("\n")
+                    return "ESC"
+                if key in valid_choices:
+                    sys.stdout.write(key + "\n")
+                    return key
