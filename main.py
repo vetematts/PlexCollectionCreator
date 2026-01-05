@@ -228,6 +228,18 @@ def handle_credentials_menu():
             pause()
         elif choice == "2":
             clear_screen()
+            print(Fore.YELLOW + "2." + Fore.RESET + f" {emojis.URL} Set Plex URL\n")
+            print(
+                Fore.LIGHTBLACK_EX
+                + "You can find your Plex URL under Settings > Remote Access here:"
+                + Fore.RESET
+            )
+            print(
+                Fore.BLUE
+                + "https://app.plex.tv/desktop/#!/settings/server"
+                + Fore.RESET
+                + "\n"
+            )
             new_url = read_line("Enter new Plex URL (Esc to cancel): ")
             if new_url is None:
                 continue
