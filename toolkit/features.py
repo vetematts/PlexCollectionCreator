@@ -117,12 +117,12 @@ def run_studio_mode(tmdb, config, pause_fn):
             Fore.GREEN
             + "2."
             + Fore.RESET
-            + f" {emojis.BOOK} Import from Web List (Wikipedia)\n"
+            + f" {emojis.BOOK} Import from Online Lists (Wikipedia/Criterion)\n"
         )
     else:
         print(
             Fore.LIGHTBLACK_EX
-            + f"2. {emojis.BOOK} Import from Web List (Install 'beautifulsoup4' to enable)\n"
+            + f"2. {emojis.BOOK} Import from Online Lists (Install 'beautifulsoup4' to enable)\n"
         )
     print(
         Fore.GREEN + "3." + Fore.RESET + f" {emojis.MOVIE} Search Local Plex Library\n"
@@ -203,7 +203,13 @@ def run_studio_mode(tmdb, config, pause_fn):
             Fore.GREEN
             + "2."
             + Fore.RESET
-            + f" {emojis.BOOK} Import from Web List (Wikipedia)\n"
+            + f" {emojis.BOOK} Import from Online Lists (Wikipedia/Criterion)\n"
+        )
+        print(
+            Fore.LIGHTBLACK_EX
+            + "Best for frequently updated lists (e.g. A24, Academy Award Winners)."
+            + Fore.RESET
+            + "\n"
         )
         print_grid(
             constants.WIKIPEDIA_URLS.keys(),
