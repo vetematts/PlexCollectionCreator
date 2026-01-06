@@ -1,4 +1,6 @@
 import difflib
+import requests
+from urllib.parse import urlencode
 from colorama import Fore
 from toolkit import emojis
 from toolkit.services.plex_manager import PlexManager
@@ -162,10 +164,54 @@ def process_and_create_collection(
         except AttributeError as e:
             if "createSmartCollection" in str(e):
                 print(
-                    Fore.RED
-                    + f"\n{emojis.CROSS} Failed: The installed 'plexapi' library is too old to support Smart Collections."
+                    Fore.YELLOW
+                    + f"\n{emojis.INFO} 'plexapi' is outdated. Attempting fallback method..."
+                    + Fore.RESET
                 )
-                print(Fore.RED + "Please run: pip install --upgrade plexapi")
+                try:
+                    # Fallback: Manual API call for older plexapi versions
+                    server = library._server
+                    section_id = library.key
+
+                    # Prepare filter params (ensure type=1 for movies)
+                    filter_params = {"type": 1}
+                    filter_params.update(smart_filter)
+
+                    # Construct the internal URI for the filter
+                    # path: /library/sections/{id}/all
+                    path = f"/library/sections/{section_id}/all"
+                    query = urlencode(filter_params)
+                    uri_path = f"{path}?{query}"
+
+                    # Full server:// URI
+                    server_uri = f"server://{server.machineIdentifier}/com.plexapp.plugins.library{uri_path}"
+
+                    # Create collection params
+                    create_params = {
+                        "title": collection_name,
+                        "smart": 1,
+                        "sectionId": section_id,
+                        "type": 1,
+                        "uri": server_uri,
+                    }
+
+                    url = server.url("/library/collections")
+                    res = requests.post(url, headers=server._headers(), params=create_params)
+
+                    if res.status_code >= 400:
+                        raise Exception(f"HTTP {res.status_code}")
+
+                    print(
+                        f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully (Fallback)!"
+                    )
+                    pause_fn()
+                    return
+                except Exception as fallback_error:
+                    print(
+                        Fore.RED
+                        + f"\n{emojis.CROSS} Fallback failed: {fallback_error}"
+                    )
+                    print(Fore.RED + "Please run: pip install --upgrade plexapi")
 
                 fallback = read_line(
                     Fore.YELLOW
