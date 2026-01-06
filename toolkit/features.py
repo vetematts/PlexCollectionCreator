@@ -307,7 +307,30 @@ def run_studio_mode(tmdb, config, pause_fn):
             )
             smart_filter = None
             if smart_choice and smart_choice.lower() == "y":
-                smart_filter = {"studio": studio_query.strip()}
+                # Try to resolve Studio ID for better compatibility
+                try:
+                    studio_choices = library.listFilterChoices("studio")
+                    clean_query = studio_query.strip().lower()
+                    # Try exact match first
+                    matched = next(
+                        (c for c in studio_choices if c.title.lower() == clean_query),
+                        None,
+                    )
+                    # Try partial match if exact fails
+                    if not matched:
+                        matched = next(
+                            (c for c in studio_choices if clean_query in c.title.lower()),
+                            None,
+                        )
+                        if matched:
+                            smart_filter = {"studio": matched.key}
+                            # Update name to the official one
+                            studio_query = matched.title
+                    else:
+                        smart_filter = {"studio": studio_query.strip()}
+                except Exception:
+                    smart_filter = {"studio": studio_query.strip()}
+
             return studio_query.strip(), items, True, smart_filter
         except Exception as e:
             print(Fore.RED + f"Error searching Plex: {e}")

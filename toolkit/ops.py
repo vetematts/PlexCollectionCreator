@@ -196,7 +196,9 @@ def process_and_create_collection(
                     }
 
                     url = server.url("/library/collections")
-                    res = requests.post(url, headers=server._headers(), params=create_params)
+                    res = requests.post(
+                        url, headers=server._headers(), params=create_params
+                    )
 
                     if res.status_code >= 400:
                         raise Exception(f"HTTP {res.status_code}")
@@ -208,8 +210,7 @@ def process_and_create_collection(
                     return
                 except Exception as fallback_error:
                     print(
-                        Fore.RED
-                        + f"\n{emojis.CROSS} Fallback failed: {fallback_error}"
+                        Fore.RED + f"\n{emojis.CROSS} Fallback failed: {fallback_error}"
                     )
                     print(Fore.RED + "Please run: pip install --upgrade plexapi")
 
