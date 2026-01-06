@@ -145,11 +145,7 @@ def process_and_create_collection(
 
             confirm = read_line("Overwrite existing collection? (y/n): ")
             if confirm and confirm.lower() == "y":
-                print(
-                    Fore.YELLOW
-                    + f"Deleting '{collection_name}'..."
-                    + Fore.RESET
-                )
+                print(Fore.YELLOW + f"Deleting '{collection_name}'..." + Fore.RESET)
                 existing[0].delete()
             else:
                 print("Canceled.")
@@ -158,7 +154,9 @@ def process_and_create_collection(
 
         try:
             library.createSmartCollection(collection_name, **smart_filter)
-            print(f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!")
+            print(
+                f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!"
+            )
             pause_fn()
             return
         except AttributeError as e:
@@ -179,7 +177,10 @@ def process_and_create_collection(
                     return
                 print(f"\n{emojis.INFO} Proceeding with static collection...")
             else:
-                print(Fore.RED + f"\n{emojis.CROSS} Failed to create Smart Collection: {e}")
+                print(
+                    Fore.RED
+                    + f"\n{emojis.CROSS} Failed to create Smart Collection: {e}"
+                )
                 pause_fn()
                 return
         except Exception as e:
