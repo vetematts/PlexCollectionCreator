@@ -145,11 +145,18 @@ def check_system_requirements():
         if len(parts) >= 2:
             major, minor = int(parts[0]), int(parts[1])
             if major < 4 or (major == 4 and minor < 15):
-                print(Fore.YELLOW + f"{emojis.INFO} Warning: 'plexapi' is outdated ({plexapi.__version__}).")
-                print("   Smart Collections require v4.15.0+. Run 'pip install --upgrade plexapi' to update.\n" + Fore.RESET)
+                print(
+                    Fore.YELLOW
+                    + f"{emojis.INFO} Warning: 'plexapi' is outdated ({plexapi.__version__})."
+                )
+                print(
+                    "   Smart Collections require v4.15.0+. Run 'pip install --upgrade plexapi' to update.\n"
+                    + Fore.RESET
+                )
                 time.sleep(2)
     except Exception:
         pass
+
 
 def check_credentials():
     # Check and display the status of the loaded credentials.
