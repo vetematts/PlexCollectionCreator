@@ -145,7 +145,11 @@ def process_and_create_collection(
 
             confirm = read_line("Overwrite existing collection? (y/n): ")
             if confirm and confirm.lower() == "y":
-                print(f"Deleting '{collection_name}'...")
+                print(
+                    Fore.YELLOW
+                    + f"Deleting '{collection_name}'..."
+                    + Fore.RESET
+                )
                 existing[0].delete()
             else:
                 print("Canceled.")
@@ -155,6 +159,15 @@ def process_and_create_collection(
         try:
             library.createSmartCollection(collection_name, **smart_filter)
             print(f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!")
+        except AttributeError as e:
+            if "createSmartCollection" in str(e):
+                print(
+                    Fore.RED
+                    + f"\n{emojis.CROSS} Failed: The installed 'plexapi' library is too old to support Smart Collections."
+                )
+                print(Fore.RED + "Please run: pip install --upgrade plexapi")
+            else:
+                print(Fore.RED + f"\n{emojis.CROSS} Failed to create Smart Collection: {e}")
         except Exception as e:
             print(Fore.RED + f"\n{emojis.CROSS} Failed to create Smart Collection: {e}")
         pause_fn()
