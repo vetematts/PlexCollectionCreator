@@ -154,12 +154,7 @@ def process_and_create_collection(
 
         try:
             library.createSmartCollection(collection_name, **smart_filter)
-            print(
-                f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!"
-            )
-            print(
-                f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!"
-            )
+            print(f"\n{emojis.CHECK} Smart Collection '{collection_name}' created successfully!")
         except Exception as e:
             print(Fore.RED + f"\n{emojis.CROSS} Failed to create Smart Collection: {e}")
         pause_fn()
