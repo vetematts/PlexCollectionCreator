@@ -349,9 +349,9 @@ def run_poster_tool(config, pause_fn):
         + Fore.RESET
         + "\n"
     )
-    print(Fore.YELLOW + "1." + Fore.RESET + " Fix Posters for a specific Collection")
+    print(Fore.YELLOW + "1." + Fore.RESET + " Fix Posters for a specific Collection\n")
     print(
-        Fore.YELLOW + "2." + Fore.RESET + " Fix Posters for the ENTIRE Library (Slow)"
+        Fore.YELLOW + "2." + Fore.RESET + " Fix Posters for the ENTIRE Library (Slow)\n"
     )
     print(Fore.RED + "3." + Fore.RESET + f" {emojis.BACK} Return to main menu\n")
 
@@ -367,7 +367,19 @@ def run_poster_tool(config, pause_fn):
 
         items_to_process = []
         if choice == "1":
+            print(f"\n{emojis.INFO} Fetching collections from Plex...")
             col_names = [c.title for c in library.collections()]
+            if not col_names:
+                print(Fore.YELLOW + "No collections found.")
+                pause_fn()
+                return
+
+            print_grid(
+                col_names,
+                columns=2,
+                padding=30,
+                title=Fore.GREEN + "Available Collections:",
+            )
             col_name = pick_from_list_case_insensitive(
                 "\n" + Fore.LIGHTBLACK_EX + "Select a collection (Esc to cancel): ",
                 col_names,
