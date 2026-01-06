@@ -319,7 +319,11 @@ def run_studio_mode(tmdb, config, pause_fn):
                     # Try partial match if exact fails
                     if not matched:
                         matched = next(
-                            (c for c in studio_choices if clean_query in c.title.lower()),
+                            (
+                                c
+                                for c in studio_choices
+                                if clean_query in c.title.lower()
+                            ),
                             None,
                         )
                         if matched:
