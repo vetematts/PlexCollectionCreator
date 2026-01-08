@@ -266,9 +266,9 @@ def _handle_existing_collection(library, collection_name, found_movies, pause_fn
                 )
         except Exception as e:
             print(Fore.RED + f"\n{emojis.CROSS} Failed to append items: {e}")
-        finally:
-            pause_fn()
-            return "stop"
+
+        pause_fn()
+        return "stop"
 
     if choice in ("o", "O"):
         print(
