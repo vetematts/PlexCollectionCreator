@@ -422,7 +422,9 @@ def run_missing_movies_tool(tmdb, config, pause_fn):
 
     # 1. Get Expected Titles from TMDb
     # We reuse the franchise selection logic but skip the collection naming part
-    franchise_name, expected_titles = _handle_franchise_tmdb(tmdb, pause_fn, skip_naming=True)
+    franchise_name, expected_titles = _handle_franchise_tmdb(
+        tmdb, pause_fn, skip_naming=True
+    )
     if not expected_titles:
         return
 
@@ -450,6 +452,7 @@ def run_missing_movies_tool(tmdb, config, pause_fn):
 
     print()
     pause_fn()
+
 
 def _get_items_for_poster_tool(library, choice, pause_fn):
     """Selects items to process based on user choice (Collection vs All)."""
