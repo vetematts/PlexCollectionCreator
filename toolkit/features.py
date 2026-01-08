@@ -561,9 +561,21 @@ def run_library_stats(config, pause_fn):
         print(f"Total Movies:      {Fore.WHITE}{total_movies}{Fore.RESET}")
         print(f"Total Collections: {Fore.WHITE}{total_collections}{Fore.RESET}")
 
-        print_grid([f"{k} ({v})" for k, v in studios.most_common(5)], columns=1, title=f"\n{Fore.GREEN}--- Top Studios ---{Fore.RESET}")
-        print_grid([f"{k} ({v})" for k, v in genres.most_common(5)], columns=1, title=f"\n{Fore.GREEN}--- Top Genres ---{Fore.RESET}")
-        print_grid([f"{k} ({v})" for k, v in sorted(decades.items(), reverse=True)[:5]], columns=1, title=f"\n{Fore.GREEN}--- Top Decades ---{Fore.RESET}")
+        print_grid(
+            [f"{k} ({v})" for k, v in studios.most_common(5)],
+            columns=1,
+            title=f"\n{Fore.GREEN}--- Top Studios ---{Fore.RESET}",
+        )
+        print_grid(
+            [f"{k} ({v})" for k, v in genres.most_common(5)],
+            columns=1,
+            title=f"\n{Fore.GREEN}--- Top Genres ---{Fore.RESET}",
+        )
+        print_grid(
+            [f"{k} ({v})" for k, v in sorted(decades.items(), reverse=True)[:5]],
+            columns=1,
+            title=f"\n{Fore.GREEN}--- Top Decades ---{Fore.RESET}",
+        )
 
     except Exception as e:
         print(Fore.RED + f"\n{emojis.CROSS} Error generating stats: {e}")
