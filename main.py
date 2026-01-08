@@ -386,7 +386,11 @@ def handle_credentials_menu():
             print(Fore.CYAN + f"{emojis.BOOK} Current Configuration:\n")
 
             def _print_kv(label, value):
-                val_str = str(value) if value else Fore.LIGHTBLACK_EX + "(Not Set)" + Fore.RESET
+                val_str = (
+                    str(value)
+                    if value
+                    else Fore.LIGHTBLACK_EX + "(Not Set)" + Fore.RESET
+                )
                 print(f"{Fore.WHITE}{label:<18}{Fore.RESET} : {val_str}")
 
             _print_kv("Plex URL", config.get("PLEX_URL"))
@@ -398,8 +402,22 @@ def handle_credentials_menu():
             last_plex = config.get("PLEX_LAST_TESTED", "")
             last_tmdb = config.get("TMDB_LAST_TESTED", "")
 
-            _print_kv("Plex Last Tested", (Fore.GREEN + last_plex + Fore.RESET) if last_plex else (Fore.RED + "Never" + Fore.RESET))
-            _print_kv("TMDb Last Tested", (Fore.GREEN + last_tmdb + Fore.RESET) if last_tmdb else (Fore.RED + "Never" + Fore.RESET))
+            _print_kv(
+                "Plex Last Tested",
+                (
+                    (Fore.GREEN + last_plex + Fore.RESET)
+                    if last_plex
+                    else (Fore.RED + "Never" + Fore.RESET)
+                ),
+            )
+            _print_kv(
+                "TMDb Last Tested",
+                (
+                    (Fore.GREEN + last_tmdb + Fore.RESET)
+                    if last_tmdb
+                    else (Fore.RED + "Never" + Fore.RESET)
+                ),
+            )
 
             pause("\nPress Enter or Esc to return to the credentials menu...")
         else:
